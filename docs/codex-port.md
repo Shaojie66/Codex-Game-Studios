@@ -9,7 +9,7 @@ This repository started as a Claude Code template. It now includes a Codex/OMX c
 - Legacy workflow skills under `.claude/skills/` are exposed to Codex as `$studio-<workflow>`.
 - `docs/codex-agent-catalog.md` maps upstream role names to the generated Codex prompt names.
 - The generated bridge layer is intentionally thin: it reads the legacy source file at runtime and adapts Claude-specific concepts to Codex conventions.
-- A small set of high-traffic workflows use hand-authored Codex-native wrappers instead of the generic bridge: `$studio-start`, `$studio-help`, `$studio-project-stage-detect`, `$studio-dev-story`, `$studio-brainstorm`, `$studio-design-system`, `$studio-create-architecture`, `$studio-architecture-decision`, `$studio-architecture-review`, `$studio-create-control-manifest`, `$studio-code-review`, `$studio-story-readiness`, `$studio-story-done`, `$studio-create-epics`, `$studio-create-stories`, `$studio-sprint-plan`, `$studio-sprint-status`, `$studio-qa-plan`, `$studio-smoke-check`, `$studio-team-qa`, `$studio-release-checklist`, `$studio-setup-engine`, and `$studio-test-setup`.
+- A small set of high-traffic workflows use hand-authored Codex-native wrappers instead of the generic bridge: `$studio-start`, `$studio-help`, `$studio-project-stage-detect`, `$studio-dev-story`, `$studio-brainstorm`, `$studio-map-systems`, `$studio-design-system`, `$studio-review-all-gdds`, `$studio-create-architecture`, `$studio-architecture-decision`, `$studio-architecture-review`, `$studio-create-control-manifest`, `$studio-code-review`, `$studio-story-readiness`, `$studio-story-done`, `$studio-create-epics`, `$studio-create-stories`, `$studio-sprint-plan`, `$studio-sprint-status`, `$studio-qa-plan`, `$studio-smoke-check`, `$studio-team-qa`, `$studio-release-checklist`, `$studio-setup-engine`, and `$studio-test-setup`.
 
 ## Recommended Entry Points
 
@@ -43,9 +43,10 @@ The bridge is safe to rerun because the generated files are deterministic wrappe
 
 Use curated wrappers first for the main Codex path:
 
-- ideation: `$studio-brainstorm`
+- ideation: `$studio-brainstorm`, `$studio-map-systems`
 - engine/bootstrap: `$studio-setup-engine`, `$studio-test-setup`
 - project orientation: `$studio-start`, `$studio-help`, `$studio-project-stage-detect`
+- design review: `$studio-design-system`, `$studio-review-all-gdds`
 - architecture prep: `$studio-create-architecture`, `$studio-architecture-decision`, `$studio-architecture-review`
 - implementation controls: `$studio-create-control-manifest`
 - implementation/review/closure: `$studio-dev-story`, `$studio-code-review`, `$studio-story-done`

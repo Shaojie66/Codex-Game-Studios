@@ -113,7 +113,9 @@ Use curated Codex-native workflows first:
 - `$studio-project-stage-detect`
 - `$studio-brainstorm`
 - `$studio-setup-engine`
+- `$studio-map-systems`
 - `$studio-design-system`
+- `$studio-review-all-gdds`
 - `$studio-create-architecture`
 - `$studio-architecture-decision`
 - `$studio-architecture-review`

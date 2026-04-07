@@ -1,23 +1,60 @@
 ---
 name: studio-map-systems
-description: Codex bridge for the legacy Claude Code Game Studios workflow `map-systems`
+description: Codex-native workflow for decomposing a concept into systems, dependencies, and design order
 ---
 
-# Studio Bridge: map-systems
+# Studio Map Systems
 
-This wrapper ports the legacy workflow defined in `.claude/skills/map-systems/SKILL.md` to Codex/OMX.
+Use this after concept definition to turn the game idea into a systems index with dependencies, priorities, and design order.
 
-<Execution>
-1. Read `.claude/skills/map-systems/SKILL.md` in full before taking action.
-2. Use its phases, required artifacts, dependencies, and completion criteria as the workflow contract.
-3. Adapt Claude-specific constructs:
-- `AskUserQuestion`: ask only when the needed information cannot be derived safely; otherwise inspect the repo and proceed autonomously.
-- `Task`: use Codex native subagents or `/prompts:studio-<role>` wrappers for specialist delegation.
-- `Write` and `Edit` approval gates: follow `AGENTS.md` instead of waiting for legacy approval language.
-- Slash-command references like `/foo`: translate to `$studio-foo` when the bridge exists; otherwise read the legacy skill file directly.
-- References to `.claude/settings.json` hooks or Claude runtime behavior: treat them as historical reference only. Codex runtime behavior comes from `.codex/config.toml`, `AGENTS.md`, and OMX.
-4. Keep the legacy workflow's sequencing, artifacts, and verification rigor. Do not silently skip phases that materially protect correctness.
-5. If the legacy workflow mainly produces docs, reports, or plans, create or update those repo artifacts instead of only summarizing them in chat.
+## Read First
 
-<Completion>
-The task is complete only when the requested workflow outcome exists in the repo or has been verified under Codex/OMX conventions.
+1. `AGENTS.md`
+2. `docs/codex-port.md`
+3. `.claude/skills/map-systems/SKILL.md`
+4. `design/gdd/game-concept.md`
+5. `design/gdd/game-pillars.md` if present
+6. Existing `design/gdd/systems-index.md` if present
+7. Existing GDDs under `design/gdd/`
+
+## Goal
+
+Write or refresh `design/gdd/systems-index.md` so the project has an explicit map of required systems, dependency layers, milestone priorities, and recommended GDD authoring order.
+
+## Workflow
+
+1. Resolve mode:
+   - full systems decomposition
+   - `next` for the next undesigned system handoff
+2. Read the concept and extract both explicit and implied systems.
+3. Group systems by category and note whether each is explicit or inferred.
+4. Build a dependency map and layer ordering:
+   - `Foundation`
+   - `Core`
+   - `Feature`
+   - `Presentation`
+   - `Polish`
+5. Assign priority tiers based on concept scope and MVP needs.
+6. Write or update `design/gdd/systems-index.md` with:
+   - systems table
+   - dependency ordering
+   - milestone tiers
+   - recommended design order
+   - progress state
+7. In `next` mode, recommend the next system for `$studio-design-system`.
+
+## Codex Adaptation Rules
+
+- Prefer direct repo-backed decomposition over long approval trees.
+- Reuse and update an existing systems index instead of recreating it when possible.
+- Surface circular dependencies and bottleneck systems explicitly rather than hand-waving them away.
+- Keep player-experience reasoning in priority choices, not just technical ordering.
+- Treat missing `game-concept.md` as a real blocker and route to `$studio-brainstorm`.
+
+## Handoff
+
+Recommend the next step, usually `$studio-design-system`, `$studio-review-all-gdds`, or `$studio-map-systems next`.
+
+## Completion
+
+Complete when `design/gdd/systems-index.md` exists or is refreshed and gives the team a concrete design-order map.
