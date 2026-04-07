@@ -18,6 +18,7 @@ CURATED_SKILLS=(
   "studio-help"
   "studio-project-stage-detect"
   "studio-qa-plan"
+  "studio-release-checklist"
   "studio-setup-engine"
   "studio-smoke-check"
   "studio-sprint-plan"
@@ -25,6 +26,7 @@ CURATED_SKILLS=(
   "studio-start"
   "studio-story-readiness"
   "studio-story-done"
+  "studio-team-qa"
   "studio-test-setup"
 )
 

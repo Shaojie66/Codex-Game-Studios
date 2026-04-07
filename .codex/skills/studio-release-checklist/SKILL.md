@@ -1,23 +1,60 @@
 ---
 name: studio-release-checklist
-description: Codex bridge for the legacy Claude Code Game Studios workflow `release-checklist`
+description: Codex-native pre-release checklist generation for PC, console, mobile, or all targets
 ---
 
-# Studio Bridge: release-checklist
+# Studio Release Checklist
 
-This wrapper ports the legacy workflow defined in `.claude/skills/release-checklist/SKILL.md` to Codex/OMX.
+Use this to generate a release-readiness checklist before launch or submission.
 
-<Execution>
-1. Read `.claude/skills/release-checklist/SKILL.md` in full before taking action.
-2. Use its phases, required artifacts, dependencies, and completion criteria as the workflow contract.
-3. Adapt Claude-specific constructs:
-- `AskUserQuestion`: ask only when the needed information cannot be derived safely; otherwise inspect the repo and proceed autonomously.
-- `Task`: use Codex native subagents or `/prompts:studio-<role>` wrappers for specialist delegation.
-- `Write` and `Edit` approval gates: follow `AGENTS.md` instead of waiting for legacy approval language.
-- Slash-command references like `/foo`: translate to `$studio-foo` when the bridge exists; otherwise read the legacy skill file directly.
-- References to `.claude/settings.json` hooks or Claude runtime behavior: treat them as historical reference only. Codex runtime behavior comes from `.codex/config.toml`, `AGENTS.md`, and OMX.
-4. Keep the legacy workflow's sequencing, artifacts, and verification rigor. Do not silently skip phases that materially protect correctness.
-5. If the legacy workflow mainly produces docs, reports, or plans, create or update those repo artifacts instead of only summarizing them in chat.
+## Read First
 
-<Completion>
-The task is complete only when the requested workflow outcome exists in the repo or has been verified under Codex/OMX conventions.
+1. `AGENTS.md`
+2. `docs/codex-port.md`
+3. `.claude/skills/release-checklist/SKILL.md`
+4. `CLAUDE.md`
+5. Current milestone and release context under `production/milestones/` and `production/releases/` if present
+6. QA outputs, bug lists, and test artifacts relevant to the pending release
+
+## Goal
+
+Write a release checklist under `production/releases/` that combines codebase health, quality gates, platform-specific requirements, store readiness, and a clear go/no-go recommendation.
+
+## Workflow
+
+1. Resolve target platform:
+   - `pc`
+   - `console`
+   - `mobile`
+   - `all`
+2. Read project context, current milestone scope, and any release-version hints already present in the repo.
+3. Scan the codebase for release blockers or warnings:
+   - `TODO`
+   - `FIXME`
+   - `HACK`
+   - known QA or bug outputs when available
+4. Build a checklist covering:
+   - codebase health
+   - build verification
+   - quality gates
+   - content completeness
+   - store and distribution readiness
+   - launch operations readiness
+5. Append platform-specific sections for the requested target platforms.
+6. Produce a final `READY` or `NOT READY` recommendation with blocking items called out explicitly.
+
+## Codex Adaptation Rules
+
+- This workflow stays explicit-invocation friendly, but when the user directly asks for release prep, proceed without extra ceremony.
+- Prefer repo-grounded blocker counts and artifact references over generic shipping advice.
+- If build or certification evidence is missing, mark the checklist item unresolved rather than treating it as passed.
+- Keep the output as a reusable release artifact under `production/releases/`.
+- Do not invent milestone, version, or platform facts that are absent from the repo.
+
+## Handoff
+
+Recommend the next step, usually `$studio-team-qa`, a fix pass, or release sign-off coordination after blockers are cleared.
+
+## Completion
+
+Complete when the release checklist file exists, lists known blockers and unresolved evidence honestly, and gives the team a clear go/no-go status.
