@@ -1,23 +1,67 @@
 ---
 name: studio-start
-description: Codex bridge for the legacy Claude Code Game Studios workflow `start`
+description: Codex-native onboarding for the game studio workflow
 ---
 
-# Studio Bridge: start
+# Studio Start
 
-This wrapper ports the legacy workflow defined in `.claude/skills/start/SKILL.md` to Codex/OMX.
+Use this as the first workflow in a fresh or partially adopted project.
 
-<Execution>
-1. Read `.claude/skills/start/SKILL.md` in full before taking action.
-2. Use its phases, required artifacts, dependencies, and completion criteria as the workflow contract.
-3. Adapt Claude-specific constructs:
-- `AskUserQuestion`: ask only when the needed information cannot be derived safely; otherwise inspect the repo and proceed autonomously.
-- `Task`: use Codex native subagents or `/prompts:studio-<role>` wrappers for specialist delegation.
-- `Write` and `Edit` approval gates: follow `AGENTS.md` instead of waiting for legacy approval language.
-- Slash-command references like `/foo`: translate to `$studio-foo` when the bridge exists; otherwise read the legacy skill file directly.
-- References to `.claude/settings.json` hooks or Claude runtime behavior: treat them as historical reference only. Codex runtime behavior comes from `.codex/config.toml`, `AGENTS.md`, and OMX.
-4. Keep the legacy workflow's sequencing, artifacts, and verification rigor. Do not silently skip phases that materially protect correctness.
-5. If the legacy workflow mainly produces docs, reports, or plans, create or update those repo artifacts instead of only summarizing them in chat.
+## Goal
 
-<Completion>
-The task is complete only when the requested workflow outcome exists in the repo or has been verified under Codex/OMX conventions.
+Figure out where the project actually stands, set review mode if needed, and give the user one clear next step in Codex terms.
+
+## Read First
+
+1. `AGENTS.md`
+2. `docs/codex-port.md`
+3. `.claude/skills/start/SKILL.md`
+4. `.claude/docs/technical-preferences.md`
+
+## Detect Project State
+
+Inspect, without writing:
+
+- whether an engine is configured in `.claude/docs/technical-preferences.md`
+- whether `design/gdd/game-concept.md` exists
+- how many markdown files exist under `design/gdd/`
+- whether there is code in `src/`
+- whether there are prototypes in `prototypes/`
+- whether there are sprint or milestone artifacts in `production/`
+
+Summarize those findings briefly before recommending the next path.
+
+## Review Mode
+
+If `production/review-mode.txt` does not exist, create it with:
+
+- `lean` by default
+- `full` only if the user explicitly asks for thorough reviews at every stage
+- `solo` only if the user explicitly asks for minimal review overhead
+
+If you set it by assumption, say so in one short sentence.
+
+## Routing Rules
+
+Pick the closest path below and recommend exactly one next action first:
+
+- No concept yet → recommend `$studio-brainstorm`
+- Vague concept only → recommend `$studio-brainstorm`
+- Clear concept but no systems decomposition → recommend `$studio-map-systems` or `$studio-setup-engine` depending on whether engine is configured
+- Existing docs/code → recommend `$studio-project-stage-detect`
+
+After the first action, list a short follow-on path of at most 5 steps using `$studio-*` names when available.
+
+## Codex Adaptation Rules
+
+- Do not mimic Claude `AskUserQuestion`; ask a concise plain-language question only when the answer materially changes the path and cannot be inferred.
+- Do not wait for permission on low-risk repo inspection or on writing `production/review-mode.txt`.
+- Prefer autonomous routing based on repo state.
+
+## Completion
+
+Complete when you have:
+
+1. summarized the detected state,
+2. ensured `production/review-mode.txt` exists,
+3. recommended one primary next step plus a short follow-on path.

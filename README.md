@@ -180,10 +180,12 @@ All hooks fail gracefully if optional tools are missing — nothing breaks, you 
    - `/prompts:studio-godot-specialist` / `/prompts:studio-unity-specialist` / `/prompts:studio-unreal-specialist` — engine-specific work
 
 5. **Use the generated Codex bridges and upstream playbooks together**:
-   - `$studio-start` — Codex bridge for the original onboarding workflow
-   - `$studio-design-system` — Codex bridge for GDD authoring
-   - `$studio-dev-story` — Codex bridge for implementation workflow
-   - `$studio-test-setup` — Codex bridge for test scaffolding
+   - `$studio-start` — Codex-native onboarding wrapper
+   - `$studio-help` — Codex-native “what next?” helper
+   - `$studio-project-stage-detect` — Codex-native project audit wrapper
+   - `$studio-dev-story` — Codex-native implementation wrapper
+   - `$studio-design-system` — generated bridge for GDD authoring
+   - `$studio-test-setup` — generated bridge for test scaffolding
    - `.claude/skills/...` — source playbooks if you need the underlying workflow details
 
 6. **Use the upstream skill docs as reference playbooks**:

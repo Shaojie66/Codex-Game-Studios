@@ -9,6 +9,7 @@ This repository started as a Claude Code template. It now includes a Codex/OMX c
 - Legacy workflow skills under `.claude/skills/` are exposed to Codex as `$studio-<workflow>`.
 - `docs/codex-agent-catalog.md` maps upstream role names to the generated Codex prompt names.
 - The generated bridge layer is intentionally thin: it reads the legacy source file at runtime and adapts Claude-specific concepts to Codex conventions.
+- A small set of high-traffic workflows use hand-authored Codex-native wrappers instead of the generic bridge: `$studio-start`, `$studio-help`, `$studio-project-stage-detect`, and `$studio-dev-story`.
 
 ## Recommended Entry Points
 
@@ -36,4 +37,4 @@ This script rebuilds:
 - `.codex/prompts/studio-*.md`
 - `.codex/skills/studio-*/SKILL.md`
 
-The bridge is safe to rerun because the generated files are deterministic wrappers over the legacy `.claude` sources.
+The bridge is safe to rerun because the generated files are deterministic wrappers over the legacy `.claude` sources. The hand-authored curated wrappers listed above are preserved and not overwritten by the sync script.

@@ -1,23 +1,56 @@
 ---
 name: studio-dev-story
-description: Codex bridge for the legacy Claude Code Game Studios workflow `dev-story`
+description: Codex-native implementation workflow for a story file
 ---
 
-# Studio Bridge: dev-story
+# Studio Dev Story
 
-This wrapper ports the legacy workflow defined in `.claude/skills/dev-story/SKILL.md` to Codex/OMX.
+Use this to implement a planned story with the studio workflow constraints.
 
-<Execution>
-1. Read `.claude/skills/dev-story/SKILL.md` in full before taking action.
-2. Use its phases, required artifacts, dependencies, and completion criteria as the workflow contract.
-3. Adapt Claude-specific constructs:
-- `AskUserQuestion`: ask only when the needed information cannot be derived safely; otherwise inspect the repo and proceed autonomously.
-- `Task`: use Codex native subagents or `/prompts:studio-<role>` wrappers for specialist delegation.
-- `Write` and `Edit` approval gates: follow `AGENTS.md` instead of waiting for legacy approval language.
-- Slash-command references like `/foo`: translate to `$studio-foo` when the bridge exists; otherwise read the legacy skill file directly.
-- References to `.claude/settings.json` hooks or Claude runtime behavior: treat them as historical reference only. Codex runtime behavior comes from `.codex/config.toml`, `AGENTS.md`, and OMX.
-4. Keep the legacy workflow's sequencing, artifacts, and verification rigor. Do not silently skip phases that materially protect correctness.
-5. If the legacy workflow mainly produces docs, reports, or plans, create or update those repo artifacts instead of only summarizing them in chat.
+## Read First
 
-<Completion>
-The task is complete only when the requested workflow outcome exists in the repo or has been verified under Codex/OMX conventions.
+1. `AGENTS.md`
+2. `docs/codex-port.md`
+3. `.claude/skills/dev-story/SKILL.md`
+
+Then load the story and its required context before editing anything.
+
+## Required Context
+
+Read and validate:
+
+- target story file
+- `docs/architecture/tr-registry.yaml`
+- governing ADR referenced by the story
+- `docs/architecture/control-manifest.md` if present
+- `.claude/docs/technical-preferences.md`
+
+If the story path is omitted, try `production/session-state/active.md` first.
+
+## Execution Rules
+
+- Implement directly in Codex unless a specialist subagent would materially improve quality.
+- Use generated `/prompts:studio-*` roles for engine or domain specialization when helpful.
+- For Logic and Integration work, add or update tests in `tests/`.
+- Respect story scope. If implementation clearly spills out of scope, call that out before widening the change.
+- Update `production/session-state/active.md` with a short session extract after implementation.
+
+## Expected Output
+
+At the end, provide:
+
+- files changed
+- acceptance criteria coverage
+- test coverage or manual-evidence gap
+- blockers or deviations
+- explicit next command recommendation: usually `$studio-code-review` then `$studio-story-done`
+
+## Codex Adaptation Rules
+
+- Do not preserve the upstream “wait for write approval” rule.
+- Replace Claude Task orchestration with Codex-native work and bounded subagents.
+- Prefer finishing the implementation loop, including tests and session-state update, before yielding.
+
+## Completion
+
+Complete when code and tests are written, session state is updated, and the user has a clean handoff to review/closure.

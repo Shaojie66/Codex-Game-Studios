@@ -6,8 +6,26 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLAUDE_AGENTS_DIR="$ROOT_DIR/.claude/agents"
 CLAUDE_SKILLS_DIR="$ROOT_DIR/.claude/skills"
 CODEX_SKILLS_DIR="$ROOT_DIR/.codex/skills"
+CURATED_SKILLS=(
+  "studio-dev-story"
+  "studio-help"
+  "studio-project-stage-detect"
+  "studio-start"
+)
 
 mkdir -p "$CODEX_SKILLS_DIR"
+
+is_curated_skill() {
+  local candidate="$1"
+
+  for curated in "${CURATED_SKILLS[@]}"; do
+    if [[ "$curated" == "$candidate" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
 
 generate_skill_bridge() {
   local name="$1"
@@ -47,6 +65,9 @@ node "$ROOT_DIR/tools/sync-claude-agents-to-codex.mjs"
 
 while IFS= read -r skill_dir; do
   skill_name="$(basename "$skill_dir")"
+  if is_curated_skill "studio-${skill_name}"; then
+    continue
+  fi
   generate_skill_bridge "$skill_name"
 done < <(find "$CLAUDE_SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
 
