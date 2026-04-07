@@ -1,23 +1,68 @@
 ---
 name: studio-launch-checklist
-description: Codex bridge for the legacy Claude Code Game Studios workflow `launch-checklist`
+description: Codex-native launch-readiness checklist spanning code, content, operations, and go/no-go signoff
 ---
 
-# Studio Bridge: launch-checklist
+# Studio Launch Checklist
 
-This wrapper ports the legacy workflow defined in `.claude/skills/launch-checklist/SKILL.md` to Codex/OMX.
+Use this near launch to generate the comprehensive cross-discipline readiness checklist.
 
-<Execution>
-1. Read `.claude/skills/launch-checklist/SKILL.md` in full before taking action.
-2. Use its phases, required artifacts, dependencies, and completion criteria as the workflow contract.
-3. Adapt Claude-specific constructs:
-- `AskUserQuestion`: ask only when the needed information cannot be derived safely; otherwise inspect the repo and proceed autonomously.
-- `Task`: use Codex native subagents or `/prompts:studio-<role>` wrappers for specialist delegation.
-- `Write` and `Edit` approval gates: follow `AGENTS.md` instead of waiting for legacy approval language.
-- Slash-command references like `/foo`: translate to `$studio-foo` when the bridge exists; otherwise read the legacy skill file directly.
-- References to `.claude/settings.json` hooks or Claude runtime behavior: treat them as historical reference only. Codex runtime behavior comes from `.codex/config.toml`, `AGENTS.md`, and OMX.
-4. Keep the legacy workflow's sequencing, artifacts, and verification rigor. Do not silently skip phases that materially protect correctness.
-5. If the legacy workflow mainly produces docs, reports, or plans, create or update those repo artifacts instead of only summarizing them in chat.
+## Read First
 
-<Completion>
-The task is complete only when the requested workflow outcome exists in the repo or has been verified under Codex/OMX conventions.
+1. `AGENTS.md`
+2. `docs/codex-port.md`
+3. `.claude/skills/launch-checklist/SKILL.md`
+4. `CLAUDE.md`
+5. Current milestone and release context under `production/`
+6. Existing QA, release, and launch artifacts if present
+
+## Goal
+
+Write a launch checklist under `production/releases/` that covers code health, content readiness, certification/store prep, operations, community, and final go/no-go status.
+
+## Workflow
+
+1. Resolve launch mode:
+   - specific launch date
+   - `dry-run`
+2. Read the current project and release context:
+   - target platforms
+   - milestone scope
+   - prior release or launch artifacts
+3. Scan the repo for late-stage risks:
+   - `TODO`
+   - `FIXME`
+   - `HACK`
+   - debug output
+   - placeholder assets
+   - hardcoded dev/test values
+4. Build the launch checklist across major domains:
+   - code readiness
+   - content readiness
+   - quality assurance
+   - store and distribution
+   - infrastructure
+   - community and marketing
+   - operations and launch-day readiness
+5. Summarize:
+   - blocking items
+   - conditional items
+   - missing sign-offs
+   - overall readiness
+6. In non-dry-run mode, write the checklist artifact under `production/releases/`.
+
+## Codex Adaptation Rules
+
+- Keep the checklist repo-grounded; unresolved evidence stays unresolved rather than being assumed complete.
+- Preserve dry-run behavior as a no-write planning mode.
+- Treat launch readiness as broader than release packaging: include operations, support, and community surfaces.
+- Keep the final status explicit: `READY`, `NOT READY`, or `CONDITIONAL`.
+- Recommend `$studio-gate-check` or follow-up release workflows when blockers remain.
+
+## Handoff
+
+Recommend the next step, usually `$studio-gate-check`, `$studio-release-checklist`, or a blocker-specific fix/verification pass.
+
+## Completion
+
+Complete when the launch checklist exists or is clearly reported and the team has an explicit go/no-go readiness summary.

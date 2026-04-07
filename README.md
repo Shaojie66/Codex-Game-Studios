@@ -130,11 +130,13 @@ Use curated Codex-native workflows first:
 - `$studio-story-readiness`
 - `$studio-smoke-check`
 - `$studio-team-qa`
+- `$studio-gate-check`
 - `$studio-test-setup`
 - `$studio-dev-story`
 - `$studio-code-review`
 - `$studio-story-done`
 - `$studio-release-checklist`
+- `$studio-launch-checklist`
 
 Generated `$studio-*` bridges still exist for the rest of the upstream workflow catalog.
 

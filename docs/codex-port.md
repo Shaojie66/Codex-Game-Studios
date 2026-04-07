@@ -9,7 +9,7 @@ This repository started as a Claude Code template. It now includes a Codex/OMX c
 - Legacy workflow skills under `.claude/skills/` are exposed to Codex as `$studio-<workflow>`.
 - `docs/codex-agent-catalog.md` maps upstream role names to the generated Codex prompt names.
 - The generated bridge layer is intentionally thin: it reads the legacy source file at runtime and adapts Claude-specific concepts to Codex conventions.
-- A small set of high-traffic workflows use hand-authored Codex-native wrappers instead of the generic bridge: `$studio-start`, `$studio-help`, `$studio-project-stage-detect`, `$studio-dev-story`, `$studio-brainstorm`, `$studio-map-systems`, `$studio-design-system`, `$studio-design-review`, `$studio-review-all-gdds`, `$studio-propagate-design-change`, `$studio-create-architecture`, `$studio-architecture-decision`, `$studio-architecture-review`, `$studio-create-control-manifest`, `$studio-code-review`, `$studio-story-readiness`, `$studio-story-done`, `$studio-create-epics`, `$studio-create-stories`, `$studio-sprint-plan`, `$studio-sprint-status`, `$studio-qa-plan`, `$studio-smoke-check`, `$studio-team-qa`, `$studio-release-checklist`, `$studio-setup-engine`, and `$studio-test-setup`.
+- A small set of high-traffic workflows use hand-authored Codex-native wrappers instead of the generic bridge: `$studio-start`, `$studio-help`, `$studio-project-stage-detect`, `$studio-dev-story`, `$studio-brainstorm`, `$studio-map-systems`, `$studio-design-system`, `$studio-design-review`, `$studio-review-all-gdds`, `$studio-propagate-design-change`, `$studio-create-architecture`, `$studio-architecture-decision`, `$studio-architecture-review`, `$studio-create-control-manifest`, `$studio-code-review`, `$studio-story-readiness`, `$studio-story-done`, `$studio-create-epics`, `$studio-create-stories`, `$studio-sprint-plan`, `$studio-sprint-status`, `$studio-qa-plan`, `$studio-smoke-check`, `$studio-team-qa`, `$studio-gate-check`, `$studio-release-checklist`, `$studio-launch-checklist`, `$studio-setup-engine`, and `$studio-test-setup`.
 
 ## Recommended Entry Points
 
@@ -53,9 +53,9 @@ Use curated wrappers first for the main Codex path:
 - implementation/review/closure: `$studio-dev-story`, `$studio-code-review`, `$studio-story-done`
 - epic and QA planning: `$studio-create-epics`, `$studio-qa-plan`
 - story planning: `$studio-create-stories`, `$studio-sprint-plan`
-- sprint monitoring and gates: `$studio-sprint-status`, `$studio-smoke-check`, `$studio-team-qa`
+- sprint monitoring and gates: `$studio-sprint-status`, `$studio-smoke-check`, `$studio-team-qa`, `$studio-gate-check`
 - readiness gate: `$studio-story-readiness`
-- release prep: `$studio-release-checklist`
+- release prep: `$studio-release-checklist`, `$studio-launch-checklist`
 - design authoring: `$studio-design-system`
 
 Treat the rest of the `$studio-*` surface as generated bridges unless they are explicitly documented as curated.
