@@ -1,9 +1,9 @@
 <p align="center">
-  <h1 align="center">Claude Code Game Studios</h1>
+  <h1 align="center">Codex Game Studios</h1>
   <p align="center">
-    Turn a single Claude Code session into a full game development studio.
+    A Codex/OMX-compatible fork of Claude Code Game Studios.
     <br />
-    49 agents. 72 skills. One coordinated AI team.
+    Keep the upstream studio playbooks, but run them from Codex.
   </p>
 </p>
 
@@ -13,7 +13,7 @@
   <a href=".claude/skills"><img src="https://img.shields.io/badge/skills-72-green" alt="72 Skills"></a>
   <a href=".claude/hooks"><img src="https://img.shields.io/badge/hooks-12-orange" alt="12 Hooks"></a>
   <a href=".claude/rules"><img src="https://img.shields.io/badge/rules-11-red" alt="11 Rules"></a>
-  <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/built%20for-Claude%20Code-f5f5f5?logo=anthropic" alt="Built for Claude Code"></a>
+  <a href="./AGENTS.md"><img src="https://img.shields.io/badge/runtime-Codex%20%2B%20OMX-1f6feb" alt="Runtime: Codex + OMX"></a>
   <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20this%20project-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
   <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-Support%20this%20project-ea4aaa?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
 </p>
@@ -24,9 +24,20 @@
 
 Building a game solo with AI is powerful — but a single chat session has no structure. No one stops you from hardcoding magic numbers, skipping design docs, or writing spaghetti code. There's no QA pass, no design review, no one asking "does this actually fit the game's vision?"
 
-**Claude Code Game Studios** solves this by giving your AI session the structure of a real studio. Instead of one general-purpose assistant, you get 49 specialized agents organized into a studio hierarchy — directors who guard the vision, department leads who own their domains, and specialists who do the hands-on work. Each agent has defined responsibilities, escalation paths, and quality gates.
+**Codex Game Studios** keeps the upstream studio structure, but adapts it to Codex. Instead of throwing away the original agent and workflow library, this fork preserves `.claude/` as the knowledge base and adds a Codex compatibility layer on top: OMX project setup, generated Codex prompts, and Codex-native routing docs.
 
 The result: you still make every decision, but now you have a team that asks the right questions, catches mistakes early, and keeps your project organized from first brainstorm to launch.
+
+## Codex Adaptation
+
+This fork intentionally separates upstream content from Codex runtime surfaces:
+
+- `.claude/agents/` and `.claude/skills/` stay as the upstream source material
+- `.codex/prompts/studio-*.md` are generated Codex prompts built from upstream agents
+- `AGENTS.md` is the Codex top-level contract
+- `$game-studio` is the Codex-native router skill for this repository
+
+Read [docs/codex-port.md](docs/codex-port.md) for the exact compatibility model.
 
 ---
 
@@ -137,31 +148,49 @@ Type `/` in Claude Code to access all 72 skills:
 ### Prerequisites
 
 - [Git](https://git-scm.com/)
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (`npm install -g @anthropic-ai/claude-code`)
+- [Codex CLI](https://platform.openai.com/docs) with local project access
+- [oh-my-codex](https://github.com) available as `omx`
+- [Node.js](https://nodejs.org/) for the prompt sync script
 - **Recommended**: [jq](https://jqlang.github.io/jq/) (for hook validation) and Python 3 (for JSON validation)
 
 All hooks fail gracefully if optional tools are missing — nothing breaks, you just lose validation.
 
 ### Setup
 
-1. **Clone or use as template**:
+1. **Clone your fork**:
    ```bash
-   git clone https://github.com/Donchitos/Claude-Code-Game-Studios.git my-game
+   git clone https://github.com/Shaojie66/Claude-Code-Game-Studios.git my-game
    cd my-game
    ```
 
-2. **Open Claude Code** and start a session:
+2. **Install project-level OMX scaffolding**:
    ```bash
-   claude
+   omx setup --force --scope project
    ```
 
-3. **Run `/start`** — the system asks where you are (no idea, vague concept,
-   clear design, existing work) and guides you to the right workflow. No assumptions.
+3. **Generate the Codex bridge from the upstream Claude assets**:
+   ```bash
+   bash scripts/sync_codex_bridge.sh
+   ```
 
-   Or jump directly to a specific skill if you already know what you need:
-   - `/brainstorm` — explore game ideas from scratch
-   - `/setup-engine godot 4.6` — configure your engine if you already know
-   - `/project-stage-detect` — analyze an existing project
+4. **Open Codex in the project root** and use the Codex surfaces:
+   - `$game-studio` — route a task through the upstream studio workflow docs
+   - `/prompts:studio-creative-director` — creative direction
+   - `/prompts:studio-lead-programmer` — code architecture and implementation review
+   - `/prompts:studio-godot-specialist` / `/prompts:studio-unity-specialist` / `/prompts:studio-unreal-specialist` — engine-specific work
+
+5. **Use the generated Codex bridges and upstream playbooks together**:
+   - `$studio-start` — Codex bridge for the original onboarding workflow
+   - `$studio-design-system` — Codex bridge for GDD authoring
+   - `$studio-dev-story` — Codex bridge for implementation workflow
+   - `$studio-test-setup` — Codex bridge for test scaffolding
+   - `.claude/skills/...` — source playbooks if you need the underlying workflow details
+
+6. **Use the upstream skill docs as reference playbooks**:
+   - `.claude/skills/start/SKILL.md` — onboarding flow logic
+   - `.claude/skills/brainstorm/SKILL.md` — ideation workflow
+   - `.claude/skills/design-system/SKILL.md` — GDD authoring flow
+   - `.claude/skills/dev-story/SKILL.md` — implementation workflow
 
 ## Upgrading
 
@@ -172,17 +201,23 @@ versions, and which files are safe to overwrite vs. which need a manual merge.
 ## Project Structure
 
 ```
-CLAUDE.md                           # Master configuration
+AGENTS.md                           # Codex/OMX master configuration
+CLAUDE.md                           # Upstream legacy project context (kept as reference)
 .claude/
-  settings.json                     # Hooks, permissions, safety rules
-  agents/                           # 49 agent definitions (markdown + YAML frontmatter)
-  skills/                           # 72 slash commands (subdirectory per skill)
-  hooks/                            # 12 hook scripts (bash, cross-platform)
-  rules/                            # 11 path-scoped coding standards
-  statusline.sh                     # Status line script (context%, model, stage, epic breadcrumb)
+  settings.json                     # Upstream Claude runtime config (reference only)
+  agents/                           # Canonical upstream studio role definitions
+  skills/                           # Canonical upstream workflow playbooks
+  hooks/                            # Upstream Claude hook scripts
+  rules/                            # Upstream path-scoped coding standards
+  statusline.sh                     # Upstream status line script
   docs/
     workflow-catalog.yaml           # 7-phase pipeline definition (read by /help)
     templates/                      # 39 document templates
+.codex/
+  prompts/                          # OMX prompts + generated studio prompts
+  skills/                           # Codex-native skills for this fork
+  agents/                           # Native OMX agent configs
+.omx/                               # Project-local OMX state, plans, logs, and HUD config
 src/                                # Game source code
 assets/                             # Art, audio, VFX, shaders, data files
 design/                             # GDDs, narrative docs, level designs
@@ -204,6 +239,8 @@ Agents follow a structured delegation model:
 3. **Conflict resolution** — disagreements escalate up to the shared parent (`creative-director` for design, `technical-director` for technical)
 4. **Change propagation** — cross-department changes are coordinated by `producer`
 5. **Domain boundaries** — agents don't modify files outside their domain without explicit delegation
+
+In this fork, those studio roles are invoked from Codex via `/prompts:studio-*`, generated from the upstream `.claude/agents/*.md` files.
 
 ### Collaborative, Not Autonomous
 

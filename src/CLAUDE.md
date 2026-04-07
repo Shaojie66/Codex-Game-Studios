@@ -1,5 +1,9 @@
 # Source Directory
 
+This file is preserved as upstream reference material. In this fork, Codex should
+still follow these rules, but use `AGENTS.md`, `docs/codex-port.md`, and the
+generated `studio-*` prompts as the active runtime surfaces.
+
 When writing or editing game code in this directory, follow these standards.
 
 ## Engine Version Warning
@@ -26,7 +30,7 @@ When in doubt, use the primary engine specialist configured in `CLAUDE.md`.
 ## Tests
 
 Tests live in `tests/` — not in `src/`.
-Run `/test-setup` to scaffold the test framework if it doesn't exist yet.
+Use `.claude/skills/test-setup/SKILL.md` as the reference playbook for test framework setup.
 Every gameplay system should have unit tests covering its formulas and edge cases.
 
 ## Verification-Driven Development
