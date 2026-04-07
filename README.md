@@ -117,8 +117,10 @@ Use curated Codex-native workflows first:
 - `$studio-create-epics`
 - `$studio-create-stories`
 - `$studio-sprint-plan`
+- `$studio-sprint-status`
 - `$studio-qa-plan`
 - `$studio-story-readiness`
+- `$studio-smoke-check`
 - `$studio-test-setup`
 - `$studio-dev-story`
 - `$studio-code-review`
