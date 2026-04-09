@@ -4,94 +4,118 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
-const sourceDir = path.join(root, ".claude", "agents");
-const targetDir = path.join(root, ".codex", "prompts");
+const sourceDir = path.join(root, ".codex", "prompt-sources", "studio");
+const promptDir = path.join(root, ".codex", "prompts");
 const catalogPath = path.join(root, "docs", "codex-agent-catalog.md");
+const bootstrapFlag = "--bootstrap-from-prompts";
 
 async function ensureDir(dir) {
   await fs.mkdir(dir, { recursive: true });
 }
 
-function parseFrontmatter(source) {
-  if (!source.startsWith("---\n")) {
-    return { frontmatter: {}, body: source };
+async function pathExists(target) {
+  try {
+    await fs.access(target);
+    return true;
+  } catch {
+    return false;
   }
-
-  const end = source.indexOf("\n---\n", 4);
-  if (end === -1) {
-    return { frontmatter: {}, body: source };
-  }
-
-  const raw = source.slice(4, end).trim();
-  const body = source.slice(end + 5).trimStart();
-  const frontmatter = {};
-
-  for (const line of raw.split("\n")) {
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!match) {
-      continue;
-    }
-
-    let [, key, value] = match;
-    value = value.trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-
-    frontmatter[key] = value;
-  }
-
-  return { frontmatter, body };
 }
 
-function toPromptName(agentName) {
-  return `studio-${agentName}`;
-}
-
-function buildPrompt({ agentName, description, sourcePath, body }) {
-  const lines = [
-    `# ${toPromptName(agentName)}`,
-    "",
-    "This prompt is generated from the upstream Claude Code Game Studios agent spec.",
-    "",
-    `- Source agent: \`${agentName}\``,
-    `- Upstream file: \`${sourcePath}\``,
-  ];
-
-  if (description) {
-    lines.push(`- Original description: ${description}`);
+async function listStudioPromptFiles(dir) {
+  if (!(await pathExists(dir))) {
+    return [];
   }
 
-  lines.push(
-    "- Codex adaptation: ignore Claude-only frontmatter such as `tools`, `model`, and `maxTurns`.",
-    "- Codex adaptation: if the source mentions `AskUserQuestion`, ask concise questions in normal conversation instead.",
+  return (await fs.readdir(dir))
+    .filter((name) => name.startsWith("studio-") && name.endsWith(".md"))
+    .sort();
+}
+
+function promptNameToAgentName(promptFile) {
+  return path.basename(promptFile, ".md").replace(/^studio-/, "");
+}
+
+function extractLegacyPromptBody(promptText) {
+  const normalized = promptText.replace(/\r\n/g, "\n");
+  const bodyStart = normalized.search(/^You are\b/m);
+
+  if (bodyStart === -1) {
+    throw new Error("Unable to find prompt body start (expected a 'You are' line)");
+  }
+
+  return normalized.slice(bodyStart).trim();
+}
+
+function replaceStructuredDecisionSections(text) {
+  return text.replace(
+    /^#{3,4} Structured Decision UI\n[\s\S]*?(?=^#{2,4} |\Z)/gm,
+    (section) => {
+      const headingMatch = section.match(/^(#{3,4})/);
+      const heading = headingMatch?.[1] ?? "####";
+      return `${heading} Decision Capture\n\n1. Explain options and trade-offs in normal conversation first.\n2. Ask only the minimum follow-up questions needed when repo evidence or user guidance is insufficient.\n3. When acting as a subagent, provide a recommended default plus concise trade-offs the caller can relay.\n\n`;
+    }
+  );
+}
+
+function replaceApprovalBlocks(text) {
+  return text.replace(
+    /^(\d+)\. \*\*Get approval before writing files:\*\*[\s\S]*?(?=^\d+\. \*\*|^#{2,} |\Z)/gm,
+    (_match, stepNumber) =>
+      `${stepNumber}. **Write files under AGENTS.md autonomy rules:**\n   - Proceed directly when the next step is clear, safe, and reversible.\n   - Ask one concise follow-up only when a missing decision would materially change the output.\n   - Keep edits incremental, repo-grounded, and easy to review.\n\n`
+  );
+}
+
+function normalizePromptBody(body) {
+  let normalized = body.replace(/\r\n/g, "\n").trim();
+
+  normalized = replaceStructuredDecisionSections(normalized);
+  normalized = replaceApprovalBlocks(normalized);
+
+  normalized = normalized
+    .replace(/`AskUserQuestion`/g, "normal conversation")
+    .replace(/\bAskUserQuestion\b/g, "normal conversation")
+    .replace(/\.claude\/docs\/templates\/incident-response\.md/g, "the repository incident-response template")
+    .replace(/approval:\s*"May I write this accessibility audit to \[path\]\?"/g, 'write-step note: "State the next concrete artifact or edit you are about to make."')
+    .replace(/Wait for "yes" before using Write\/Edit tools/g, "Proceed under AGENTS.md; pause only when a missing decision would materially change the output")
+    .replace(/May I write this section to \[filepath\]\?/g, "Proceed with the next clear, safe repo change under AGENTS.md autonomy rules")
+    .replace(/May I write this to \[filepath\]\?/g, "Proceed with the next clear, safe repo change under AGENTS.md autonomy rules")
+    .replace(/\n{3,}/g, "\n\n");
+
+  return `${normalized.trim()}\n`;
+}
+
+function buildPrompt({ agentName, body }) {
+  const sourcePath = path.posix.join(".codex", "prompt-sources", "studio", `${agentName}.md`);
+  return [
+    `# studio-${agentName}`,
+    "",
+    `This prompt is generated from the canonical Codex-native source at \`${sourcePath}\`.`,
+    "",
+    `- Source role: \`${agentName}\``,
+    "- Generated via `node tools/sync-claude-agents-to-codex.mjs`",
     "- Stay under the repository root `AGENTS.md`; this file is a narrower role surface, not the top-level authority.",
     "",
     body.trim(),
-    ""
-  );
-
-  return lines.join("\n");
+    "",
+  ].join("\n");
 }
 
-function buildCatalog(entries) {
+function buildCatalog(agentNames) {
   const lines = [
     "# Codex Agent Catalog",
     "",
     "This file is generated by `node tools/sync-claude-agents-to-codex.mjs`.",
     "",
-    "The upstream studio roles remain in `.claude/agents/`. The Codex-facing prompts are generated into `.codex/prompts/` with a `studio-` prefix to avoid collisions with OMX built-ins.",
+    "Studio prompts are generated from the canonical sources under `.codex/prompt-sources/studio/`.",
     "",
-    "| Upstream agent | Codex prompt | Source file |",
+    "| Studio role | Codex prompt | Canonical source |",
     "| --- | --- | --- |",
   ];
 
-  for (const entry of entries) {
+  for (const agentName of agentNames) {
     lines.push(
-      `| \`${entry.agentName}\` | \`/prompts:${entry.promptName}\` | \`${entry.sourcePath}\` |`
+      `| \`${agentName}\` | \`/prompts:studio-${agentName}\` | \`.codex/prompt-sources/studio/${agentName}.md\` |`
     );
   }
 
@@ -99,40 +123,63 @@ function buildCatalog(entries) {
   return lines.join("\n");
 }
 
-async function main() {
-  const files = (await fs.readdir(sourceDir))
+async function bootstrapPromptSourcesFromExistingPrompts() {
+  const promptFiles = await listStudioPromptFiles(promptDir);
+  if (promptFiles.length === 0) {
+    throw new Error("Cannot bootstrap prompt sources because no existing studio prompts were found.");
+  }
+
+  await ensureDir(sourceDir);
+
+  for (const promptFile of promptFiles) {
+    const promptPath = path.join(promptDir, promptFile);
+    const sourcePath = path.join(sourceDir, `${promptNameToAgentName(promptFile)}.md`);
+    const promptText = await fs.readFile(promptPath, "utf8");
+    const normalizedBody = normalizePromptBody(extractLegacyPromptBody(promptText));
+    await fs.writeFile(sourcePath, normalizedBody, "utf8");
+  }
+
+  return promptFiles.length;
+}
+
+async function generatePromptsFromSources() {
+  const sourceFiles = (await fs.readdir(sourceDir))
     .filter((name) => name.endsWith(".md"))
     .sort();
 
-  await ensureDir(targetDir);
-  await ensureDir(path.dirname(catalogPath));
-
-  const entries = [];
-
-  for (const file of files) {
-    const fullPath = path.join(sourceDir, file);
-    const source = await fs.readFile(fullPath, "utf8");
-    const { frontmatter, body } = parseFrontmatter(source);
-    const agentName = frontmatter.name ?? path.basename(file, ".md");
-    const promptName = toPromptName(agentName);
-    const sourcePath = path.posix.join(".claude", "agents", file);
-    const promptPath = path.join(targetDir, `${promptName}.md`);
-    const prompt = buildPrompt({
-      agentName,
-      description: frontmatter.description ?? "",
-      sourcePath,
-      body,
-    });
-
-    await fs.writeFile(promptPath, prompt, "utf8");
-    entries.push({ agentName, promptName, sourcePath });
+  if (sourceFiles.length === 0) {
+    throw new Error("No prompt sources found in .codex/prompt-sources/studio. Run with --bootstrap-from-prompts once or add sources manually.");
   }
 
-  await fs.writeFile(catalogPath, buildCatalog(entries), "utf8");
+  await ensureDir(promptDir);
+  await ensureDir(path.dirname(catalogPath));
 
-  console.log(
-    `Generated ${entries.length} studio prompts in ${path.relative(root, targetDir)}`
-  );
+  const agentNames = [];
+
+  for (const sourceFile of sourceFiles) {
+    const agentName = path.basename(sourceFile, ".md");
+    const sourcePath = path.join(sourceDir, sourceFile);
+    const rawSource = await fs.readFile(sourcePath, "utf8");
+    const normalizedBody = normalizePromptBody(rawSource);
+    const promptPath = path.join(promptDir, `studio-${agentName}.md`);
+
+    await fs.writeFile(sourcePath, normalizedBody, "utf8");
+    await fs.writeFile(promptPath, buildPrompt({ agentName, body: normalizedBody }), "utf8");
+    agentNames.push(agentName);
+  }
+
+  await fs.writeFile(catalogPath, buildCatalog(agentNames), "utf8");
+  return agentNames;
+}
+
+async function main() {
+  if (process.argv.includes(bootstrapFlag)) {
+    const bootstrapped = await bootstrapPromptSourcesFromExistingPrompts();
+    console.log(`Bootstrapped ${bootstrapped} prompt sources into .codex/prompt-sources/studio`);
+  }
+
+  const generated = await generatePromptsFromSources();
+  console.log(`Generated ${generated.length} studio prompts in ${path.relative(root, promptDir)}`);
   console.log(`Wrote ${path.relative(root, catalogPath)}`);
 }
 
