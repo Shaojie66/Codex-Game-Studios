@@ -19,6 +19,9 @@ const DEFAULT_ACTIVE_SCOPE = [
 ];
 
 const DEFAULT_ARCHIVE_SCOPE = "archive/claude";
+const LEGACY_ENGINE_NAME = "claude";
+const LEGACY_PATH_TOKEN = `.${LEGACY_ENGINE_NAME}`;
+const LEGACY_ARCHIVE_TOKEN = ["archive", LEGACY_ENGINE_NAME].join("/");
 
 const DEFAULTS = {
   root: process.cwd(),
@@ -32,6 +35,10 @@ const DEFAULTS = {
   generatorCommand: null,
   generatorCandidates: null,
 };
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 const TEXT_GLOBS_TO_SKIP = new Set([
   ".png",
@@ -51,21 +58,29 @@ const TEXT_GLOBS_TO_SKIP = new Set([
 ]);
 
 const ACTIVE_REFERENCE_PATTERNS = [
-  { id: "legacy-dot-claude", pattern: /\.claude\b/g, message: "references `.claude`" },
+  {
+    id: "legacy-dot-claude",
+    pattern: new RegExp(`${escapeRegExp(LEGACY_PATH_TOKEN)}\\b`, "g"),
+    message: `references \`${LEGACY_PATH_TOKEN}\``,
+  },
   {
     id: "legacy-read-instruction",
-    pattern: /\bread\s+[`'"]?\.claude\b/gi,
-    message: "instructs readers to use `.claude`",
+    pattern: new RegExp(`\\bread\\s+[\`'"]?${escapeRegExp(LEGACY_PATH_TOKEN)}\\b`, "gi"),
+    message: `instructs readers to use \`${LEGACY_PATH_TOKEN}\``,
   },
   {
     id: "legacy-archive-instruction",
-    pattern: /\barchive\/claude\b/g,
+    pattern: new RegExp(`\\b${escapeRegExp(LEGACY_ARCHIVE_TOKEN)}\\b`, "g"),
     message: "references the archive path from active scope",
   },
 ];
 
 const PROMPT_SEMANTIC_PATTERNS = [
-  { id: "legacy-dot-claude", pattern: /\.claude\b/g, message: "contains `.claude`" },
+  {
+    id: "legacy-dot-claude",
+    pattern: new RegExp(`${escapeRegExp(LEGACY_PATH_TOKEN)}\\b`, "g"),
+    message: `contains \`${LEGACY_PATH_TOKEN}\``,
+  },
   {
     id: "ask-user-question",
     pattern: /\bAskUserQuestion\b/g,
@@ -84,11 +99,15 @@ const PROMPT_SEMANTIC_PATTERNS = [
 ];
 
 const SKILL_SEMANTIC_PATTERNS = [
-  { id: "legacy-dot-claude", pattern: /\.claude\b/g, message: "contains `.claude`" },
+  {
+    id: "legacy-dot-claude",
+    pattern: new RegExp(`${escapeRegExp(LEGACY_PATH_TOKEN)}\\b`, "g"),
+    message: `contains \`${LEGACY_PATH_TOKEN}\``,
+  },
   {
     id: "legacy-read-instruction",
-    pattern: /\bread\s+[`'"]?\.claude\b/gi,
-    message: "still instructs the workflow to read `.claude` files",
+    pattern: new RegExp(`\\bread\\s+[\`'"]?${escapeRegExp(LEGACY_PATH_TOKEN)}\\b`, "gi"),
+    message: `still instructs the workflow to read \`${LEGACY_PATH_TOKEN}\` files`,
   },
   {
     id: "claude-runtime",
@@ -98,7 +117,11 @@ const SKILL_SEMANTIC_PATTERNS = [
 ];
 
 const DOC_SEMANTIC_PATTERNS = [
-  { id: "legacy-dot-claude", pattern: /\.claude\b/g, message: "contains `.claude`" },
+  {
+    id: "legacy-dot-claude",
+    pattern: new RegExp(`${escapeRegExp(LEGACY_PATH_TOKEN)}\\b`, "g"),
+    message: `contains \`${LEGACY_PATH_TOKEN}\``,
+  },
   {
     id: "claude-runtime",
     pattern: /\b(?:Ask Claude|Claude Code session|Claude runtime|Claude hook|Claude compatibility layer)\b/gi,

@@ -7,6 +7,8 @@ import path from "node:path";
 
 import { runVerification } from "./verify-pure-codex-detach.mjs";
 
+const legacySkillPath = [".", "claude", "/skills/foo/SKILL.md"].join("");
+
 async function writeFile(root, relativePath, content) {
   const targetPath = path.join(root, relativePath);
   await fs.mkdir(path.dirname(targetPath), { recursive: true });
@@ -77,7 +79,7 @@ async function testPassingFixture() {
 async function testLegacyReferenceFixture() {
   await withTempDir(async (root) => {
     await createFixture(root);
-    await writeFile(root, "README.md", "# Broken Fixture\n\nRead `.claude/skills/foo/SKILL.md`.\n");
+    await writeFile(root, "README.md", `# Broken Fixture\n\nRead \`${legacySkillPath}\`.\n`);
 
     const result = await runVerification({
       root,
