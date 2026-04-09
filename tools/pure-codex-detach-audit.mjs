@@ -20,7 +20,7 @@ const promptDir = ".codex/prompts";
 const skillGlobPrefix = ".codex/skills/studio-";
 const legacyDirectoryName = "claude";
 const legacyMarker = `.${legacyDirectoryName}`;
-const legacyPattern = new RegExp(`\.${legacyDirectoryName}\b`, "g");
+const legacyPattern = new RegExp(String.raw`\.${legacyDirectoryName}\b`, "g");
 
 const args = process.argv.slice(2);
 const outputFormat = args.includes("--json") ? "json" : "markdown";
@@ -192,7 +192,7 @@ function buildMarkdown({ inventory, coverage }) {
     "",
     `- ACTIVE_SCOPE: ${activeScope.map((entry) => `\`${entry}\``).join(", ")}`,
     `- ALLOWED_ARCHIVE_SCOPE: ${allowedArchiveScope.map((entry) => `\`${entry}\``).join(", ")}`,
-    "- Forbidden dependency baseline: literal legacy-marker references in active content.",
+    `- Forbidden dependency baseline: literal legacy marker (\`${legacyMarker}\`) references in active content.`,
     "",
     "## Coverage Snapshot",
     "",
@@ -202,11 +202,11 @@ function buildMarkdown({ inventory, coverage }) {
     `| Generated prompts | ${coverage.promptOutputs.actual} | ${coverage.promptOutputs.expected} | ${coverage.promptOutputs.actual === coverage.promptOutputs.expected ? "PASS" : "FAIL"} |`,
     `| Studio skills | ${coverage.skills.actual} | ${coverage.skills.expected} | ${coverage.skills.actual === coverage.skills.expected ? "PASS" : "FAIL"} |`,
     `| Active files with legacy refs | ${inventory.length} | 0 | ${inventory.length === 0 ? "PASS" : "FAIL"} |`,
-    `| Total legacy-marker refs in ACTIVE_SCOPE | ${totalRefs} | 0 | ${totalRefs === 0 ? "PASS" : "FAIL"} |`,
+    `| Total legacy marker refs in ACTIVE_SCOPE | ${totalRefs} | 0 | ${totalRefs === 0 ? "PASS" : "FAIL"} |`,
     "",
     "## Class Summary",
     "",
-    "| Content class | Files with refs | Legacy-marker refs |",
+    `| Content class | Files with refs | Legacy marker refs (${legacyMarker}) |`,
     "| --- | ---: | ---: |",
     ...classSummary.map(([classification, summary]) => `| ${classification} | ${summary.files} | ${summary.refs} |`),
     "",
@@ -233,7 +233,7 @@ function buildMarkdown({ inventory, coverage }) {
     "",
     "## Notes",
     "",
-    "- This audit is intentionally deterministic: it inventories literal legacy-marker references in ACTIVE_SCOPE so the detach gate can be tracked in version control.",
+    `- This audit is intentionally deterministic: it inventories literal ${legacyMarker} references in ACTIVE_SCOPE so the detach gate can be tracked in version control.`,
     "- Files in `archive/claude/` are outside the active gate and are therefore not included here.",
     "- The missing prompt-source list is derived from the current `studio-*` generated prompt names.",
     ""
