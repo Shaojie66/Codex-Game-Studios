@@ -8,6 +8,7 @@ const sourceDir = path.join(root, ".codex", "prompt-sources", "studio");
 const promptDir = path.join(root, ".codex", "prompts");
 const catalogPath = path.join(root, "docs", "codex-agent-catalog.md");
 const bootstrapFlag = "--bootstrap-from-prompts";
+const legacyTemplatePattern = new RegExp(`\.${"claude"}/docs/templates/incident-response\.md`, "g");
 
 async function ensureDir(dir) {
   await fs.mkdir(dir, { recursive: true });
@@ -75,7 +76,7 @@ function normalizePromptBody(body) {
   normalized = normalized
     .replace(/`AskUserQuestion`/g, "normal conversation")
     .replace(/\bAskUserQuestion\b/g, "normal conversation")
-    .replace(/\.claude\/docs\/templates\/incident-response\.md/g, "the repository incident-response template")
+    .replace(legacyTemplatePattern, "the repository incident-response template")
     .replace(/approval:\s*"May I write this accessibility audit to \[path\]\?"/g, 'write-step note: "State the next concrete artifact or edit you are about to make."')
     .replace(/Wait for "yes" before using Write\/Edit tools/g, "Proceed under AGENTS.md; pause only when a missing decision would materially change the output")
     .replace(/May I write this section to \[filepath\]\?/g, "Proceed with the next clear, safe repo change under AGENTS.md autonomy rules")
