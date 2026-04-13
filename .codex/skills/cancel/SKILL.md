@@ -213,108 +213,38 @@ Team "{team_name}" cancelled:
 
 #### If Autopilot Active
 
-Call `cancelAutopilot()` from `src/hooks/autopilot/cancel.ts:27-78`:
-
-```bash
-# Autopilot handles its own cleanup + ralph + ultraqa
-# Just mark autopilot as inactive (preserves state for resume)
-if [[ -f .omx/state/autopilot-state.json ]]; then
-  # Clean up ralph if active
-  if [[ -f .omx/state/ralph-state.json ]]; then
-    RALPH_STATE=$(cat .omx/state/ralph-state.json)
-    LINKED_UW=$(echo "$RALPH_STATE" | jq -r '.linked_ultrawork // false')
-
-    # Clean linked ultrawork first
-    if [[ "$LINKED_UW" == "true" ]] && [[ -f .omx/state/ultrawork-state.json ]]; then
-      rm -f .omx/state/ultrawork-state.json
-      echo "Cleaned up: ultrawork (linked to ralph)"
-    fi
-
-    # Clean ralph
-    rm -f .omx/state/ralph-state.json
-    rm -f .omx/state/ralph-verification.json
-    echo "Cleaned up: ralph"
-  fi
-
-  # Clean up ultraqa if active
-  if [[ -f .omx/state/ultraqa-state.json ]]; then
-    rm -f .omx/state/ultraqa-state.json
-    echo "Cleaned up: ultraqa"
-  fi
-
-  # Mark autopilot inactive but preserve state
-  CURRENT_STATE=$(cat .omx/state/autopilot-state.json)
-  CURRENT_PHASE=$(echo "$CURRENT_STATE" | jq -r '.phase // "unknown"')
-  echo "$CURRENT_STATE" | jq '.active = false' > .omx/state/autopilot-state.json
-
-  echo "Autopilot cancelled at phase: $CURRENT_PHASE. Progress preserved for resume."
-  echo "Run /autopilot to resume."
-fi
-```
+1. Use `state_get_status(mode="autopilot")` for the current session.
+2. Terminalize autopilot state in that session with `state_write`:
+   - `active=false`
+   - `current_phase='cancelled'`
+   - `completed_at=<now>`
+3. If the autopilot state reports linked `ralph`, `ultrawork`, `ecomode`, or `ultraqa`
+   lanes in the same scope, terminalize those linked modes before exiting.
+4. Preserve resumable metadata when the state model supports it.
 
 #### If Ralph Active (but not Autopilot)
 
-Call `clearRalphState()` + `clearLinkedUltraworkState()` from `src/hooks/ralph-loop/index.ts:147-182`:
-
-```bash
-if [[ -f .omx/state/ralph-state.json ]]; then
-  # Check if ultrawork is linked
-  RALPH_STATE=$(cat .omx/state/ralph-state.json)
-  LINKED_UW=$(echo "$RALPH_STATE" | jq -r '.linked_ultrawork // false')
-
-  # Clean linked ultrawork first
-  if [[ "$LINKED_UW" == "true" ]] && [[ -f .omx/state/ultrawork-state.json ]]; then
-    UW_STATE=$(cat .omx/state/ultrawork-state.json)
-    UW_LINKED=$(echo "$UW_STATE" | jq -r '.linked_to_ralph // false')
-
-    # Only clear if it was linked to ralph
-    if [[ "$UW_LINKED" == "true" ]]; then
-      rm -f .omx/state/ultrawork-state.json
-      echo "Cleaned up: ultrawork (linked to ralph)"
-    fi
-  fi
-
-  # Clean ralph state
-  rm -f .omx/state/ralph-state.json
-  rm -f .omx/state/ralph-plan-state.json
-  rm -f .omx/state/ralph-verification.json
-
-  echo "Ralph cancelled. Persistent mode deactivated."
-fi
-```
+1. Use `state_get_status(mode="ralph")` for the target session.
+2. If linked `ultrawork` or `ecomode` is active in that same scope, terminalize it first.
+3. Terminalize Ralph with `state_write` so the post-conditions in
+   `docs/contracts/ralph-cancel-contract.md` are satisfied:
+   - `active=false`
+   - `current_phase='cancelled'`
+   - `completed_at=<now>`
+4. Use `state_clear` only for compatibility-only legacy files or in force mode.
 
 #### If Ultrawork Active (standalone, not linked)
 
-Call `deactivateUltrawork()` from `src/hooks/ultrawork/index.ts:150-173`:
-
-```bash
-if [[ -f .omx/state/ultrawork-state.json ]]; then
-  # Check if linked to ralph
-  UW_STATE=$(cat .omx/state/ultrawork-state.json)
-  LINKED=$(echo "$UW_STATE" | jq -r '.linked_to_ralph // false')
-
-  if [[ "$LINKED" == "true" ]]; then
-    echo "Ultrawork is linked to Ralph. Use /cancel to cancel both."
-    exit 1
-  fi
-
-  # Remove local state
-  rm -f .omx/state/ultrawork-state.json
-
-  echo "Ultrawork cancelled. Parallel execution mode deactivated."
-fi
-```
+1. Use `state_get_status(mode="ultrawork")`.
+2. If the mode is linked to Ralph in the same scope, cancel Ralph instead of
+   trying to clear Ultrawork independently.
+3. Otherwise terminalize or clear Ultrawork through `state_write` / `state_clear`
+   for the current session.
 
 #### If UltraQA Active (standalone)
 
-Call `clearUltraQAState()` from `src/hooks/ultraqa/index.ts:107-120`:
-
-```bash
-if [[ -f .omx/state/ultraqa-state.json ]]; then
-  rm -f .omx/state/ultraqa-state.json
-  echo "UltraQA cancelled. QA cycling workflow stopped."
-fi
-```
+Use `state_get_status(mode="ultraqa")` and then clear or terminalize the mode
+within the current session via `state_write` / `state_clear`.
 
 #### No Active Modes
 
@@ -323,9 +253,9 @@ echo "No active OMX modes detected."
 echo ""
 echo "Checked for:"
 echo "  - Autopilot (.omx/state/autopilot-state.json)"
-echo "  - Ralph (.omx/state/ralph-state.json)"
-echo "  - Ultrawork (.omx/state/ultrawork-state.json)"
-echo "  - UltraQA (.omx/state/ultraqa-state.json)"
+echo "  - Ralph (session-aware state or legacy compatibility files)"
+echo "  - Ultrawork (session-aware state or legacy compatibility files)"
+echo "  - UltraQA (session-aware state or legacy compatibility files)"
 echo ""
 echo "Use --force to clear all state files anyway."
 ```

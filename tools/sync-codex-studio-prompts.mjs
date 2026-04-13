@@ -3,12 +3,35 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const root = process.cwd();
+const bootstrapFlag = "--bootstrap-from-prompts";
+const rootFlag = "--root";
+const legacyTemplatePattern = new RegExp(`\.${"claude"}/docs/templates/incident-response\.md`, "g");
+
+function parseArgs(argv) {
+  let root = process.cwd();
+  const passthrough = [];
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === rootFlag) {
+      const next = argv[index + 1];
+      if (!next) {
+        throw new Error("--root requires a path");
+      }
+      root = path.resolve(next);
+      index += 1;
+      continue;
+    }
+    passthrough.push(arg);
+  }
+
+  return { root, passthrough };
+}
+
+const { root, passthrough } = parseArgs(process.argv.slice(2));
 const sourceDir = path.join(root, ".codex", "prompt-sources", "studio");
 const promptDir = path.join(root, ".codex", "prompts");
 const catalogPath = path.join(root, "docs", "codex-agent-catalog.md");
-const bootstrapFlag = "--bootstrap-from-prompts";
-const legacyTemplatePattern = new RegExp(`\.${"claude"}/docs/templates/incident-response\.md`, "g");
 
 async function ensureDir(dir) {
   await fs.mkdir(dir, { recursive: true });
@@ -155,6 +178,16 @@ async function generatePromptsFromSources() {
   await ensureDir(promptDir);
   await ensureDir(path.dirname(catalogPath));
 
+  const expectedPromptNames = new Set(
+    sourceFiles.map((sourceFile) => `studio-${path.basename(sourceFile, ".md")}.md`)
+  );
+  const existingPromptFiles = await listStudioPromptFiles(promptDir);
+  for (const promptFile of existingPromptFiles) {
+    if (!expectedPromptNames.has(promptFile)) {
+      await fs.unlink(path.join(promptDir, promptFile));
+    }
+  }
+
   const agentNames = [];
 
   for (const sourceFile of sourceFiles) {
@@ -174,7 +207,7 @@ async function generatePromptsFromSources() {
 }
 
 async function main() {
-  if (process.argv.includes(bootstrapFlag)) {
+  if (passthrough.includes(bootstrapFlag)) {
     const bootstrapped = await bootstrapPromptSourcesFromExistingPrompts();
     console.log(`Bootstrapped ${bootstrapped} prompt sources into .codex/prompt-sources/studio`);
   }
