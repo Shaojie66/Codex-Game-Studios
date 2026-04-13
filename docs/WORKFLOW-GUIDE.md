@@ -4,7 +4,7 @@
 >
 > This guide walks you through every phase of game development using the
 > 48-agent system, 68 slash commands, and 12 automated hooks. It assumes you
-> have Game Studio CLI installed and are working from the project root.
+> have Codex and OMX installed and are working from the project root.
 >
 > The pipeline has 7 phases. Each phase has a formal gate (`/gate-check`)
 > that must pass before you advance. The authoritative phase sequence is
@@ -35,7 +35,8 @@
 
 Before you start, make sure you have:
 
-- **Game Studio CLI** installed and working
+- **Codex CLI** installed and working
+- **OMX** installed and working
 - **Git** with Git Bash (Windows) or standard terminal (Mac/Linux)
 - **jq** (optional but recommended -- hooks fall back to `grep` if missing)
 - **Python 3** (optional -- some hooks use it for JSON validation)
@@ -1235,7 +1236,7 @@ The system has 12 hooks that run automatically:
 | `session-start.sh` | Session start | Shows branch, recent commits, detects active.md for recovery |
 | `detect-gaps.sh` | Session start | Detects fresh projects (no engine, no concept) and suggests `/start` |
 | `pre-compact.sh` | Before compaction | Dumps session state into conversation for auto-recovery |
-| `post-compact.sh` | After compaction | Reminds Claude to restore session state from `active.md` |
+| `post-compact.sh` | After compaction | Reminds the next Codex turn to restore session state from `active.md` |
 | `notify.sh` | Notification event | Shows Windows toast notification via PowerShell |
 | `validate-commit.sh` | Before commit | Checks for design doc references, valid JSON, no hardcoded values |
 | `validate-push.sh` | Before push | Warns on pushes to main/develop |

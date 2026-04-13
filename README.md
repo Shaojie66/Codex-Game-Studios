@@ -377,11 +377,11 @@ Codex Game Studios is free and open source. If it saves you time or helps you sh
 - **[Buy Me a Coffee](https://www.buymeacoffee.com/donchitos3)** — one-time support
 - **[GitHub Sponsors](https://github.com/sponsors/Donchitos)** — recurring support through GitHub
 
-Sponsorships help fund time spent maintaining skills, adding new agents, keeping up with Game Studio CLI and engine API changes, and responding to community issues.
+Sponsorships help fund time spent maintaining skills, adding new agents, keeping up with Codex/OMX and engine API changes, and responding to community issues.
 
 ---
 
-*Built for Game Studio CLI. Maintained and extended — contributions welcome through this repository's Discussions tab.*
+*Built for Codex and OMX. Maintained and extended — contributions welcome through this repository's Discussions tab.*
 
 ## License
 
