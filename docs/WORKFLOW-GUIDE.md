@@ -3,12 +3,13 @@
 > **How to go from zero to a shipped game using the Agent Architecture.**
 >
 > This guide walks you through every phase of game development using the
-> 48-agent system, 68 slash commands, and 12 automated hooks. It assumes you
+> 48-agent system, Codex-native workflow skills and prompts, and 12 automated hooks. It assumes you
 > have Codex and OMX installed and are working from the project root.
 >
-> The pipeline has 7 phases. Each phase has a formal gate (`/gate-check`)
-> that must pass before you advance. The authoritative phase sequence is
-> defined in `docs/studio/workflow-catalog.yaml` and read by `/help`.
+> The pipeline has 7 phases. Each phase has a formal gate (`$studio-gate-check`
+> or the legacy `/gate-check` alias) that must pass before you advance. The
+> authoritative phase sequence is defined in `docs/studio/workflow-catalog.yaml`
+> and routed through `$studio-help`.
 
 ---
 
@@ -24,7 +25,7 @@
 8. [Phase 7: Release](#phase-7-release)
 9. [Cross-Cutting Concerns](#cross-cutting-concerns)
 10. [Appendix A: Agent Quick-Reference](#appendix-a-agent-quick-reference)
-11. [Appendix B: Slash Command Quick-Reference](#appendix-b-slash-command-quick-reference)
+11. [Appendix B: Workflow Quick-Reference](#appendix-b-workflow-quick-reference)
 12. [Appendix C: Common Workflows](#appendix-c-common-workflows)
 
 ---
@@ -48,22 +49,22 @@ git clone <repo-url> my-game
 cd my-game
 ```
 
-### Step 2: Run /start
+### Step 2: Run `$studio-start`
 
 If this is your first session:
 
 ```
-/start
+$studio-start
 ```
 
 This guided onboarding asks where you are and routes you to the right phase:
 
-- **Path A** -- No idea yet: routes to `/brainstorm`
-- **Path B** -- Vague idea: routes to `/brainstorm` with seed
-- **Path C** -- Clear concept: routes to `/setup-engine` and `/map-systems`
+- **Path A** -- No idea yet: routes to `$studio-brainstorm`
+- **Path B** -- Vague idea: routes to `$studio-brainstorm` with seed
+- **Path C** -- Clear concept: routes to `$studio-setup-engine` and `$studio-map-systems`
 - **Path D1** -- Existing project, few artifacts: normal flow
-- **Path D2** -- Existing project, GDDs/ADRs exist: runs `/project-stage-detect`
-  then `/adopt` for brownfield migration
+- **Path D2** -- Existing project, GDDs/ADRs exist: runs `$studio-project-stage-detect`
+  then `$studio-adopt` for brownfield migration
 
 ### Step 3: Verify Hooks Are Working
 
@@ -86,7 +87,7 @@ make sure the hook paths are correct for your OS.
 At any point, run:
 
 ```
-/help
+$studio-help
 ```
 
 This reads your current phase from `production/stage.txt`, checks which
@@ -151,8 +152,11 @@ with defined pillars and a player journey. This is where you figure out
 
 ### Phase 1 Pipeline
 
+Current Codex-native entrypoints are shown first below. Legacy `/...` names still
+appear elsewhere in this guide as upstream aliases.
+
 ```
-/brainstorm  -->  game-concept.md  -->  /design-review  -->  /setup-engine
+$studio-brainstorm  -->  game-concept.md  -->  $studio-design-review  -->  $studio-setup-engine
      |                                        |                    |
      v                                        v                    v
   10 concepts     Concept doc with       Validation          Engine pinned in
@@ -160,7 +164,7 @@ with defined pillars and a player journey. This is where you figure out
   Player motiv.   core loop, USP         document
                                                                    |
                                                                    v
-                                                             /map-systems
+                                                             $studio-map-systems
                                                                    |
                                                                    v
                                                             systems-index.md
@@ -168,18 +172,18 @@ with defined pillars and a player journey. This is where you figure out
                                                              priority tiers)
 ```
 
-### Step 1.1: Brainstorm With /brainstorm
+### Step 1.1: Brainstorm With `$studio-brainstorm`
 
 This is your starting point. Run the brainstorm skill:
 
 ```
-/brainstorm
+$studio-brainstorm
 ```
 
 Or with a genre hint:
 
 ```
-/brainstorm roguelike deckbuilder
+$studio-brainstorm roguelike deckbuilder
 ```
 
 **What happens:** The brainstorm skill guides you through a collaborative 6-phase
@@ -207,7 +211,7 @@ The concept document includes:
 ### Step 1.2: Review the Concept (Optional but Recommended)
 
 ```
-/design-review design/gdd/game-concept.md
+$studio-design-review design/gdd/game-concept.md
 ```
 
 Validates structure and completeness before you proceed.
@@ -215,16 +219,16 @@ Validates structure and completeness before you proceed.
 ### Step 1.3: Choose Your Engine
 
 ```
-/setup-engine
+$studio-setup-engine
 ```
 
 Or with a specific engine:
 
 ```
-/setup-engine godot 4.6
+$studio-setup-engine godot 4.6
 ```
 
-**What /setup-engine does:**
+**What `$studio-setup-engine` does:**
 
 - Populates `docs/studio/technical-preferences.md` with naming conventions,
   performance budgets, and engine-specific defaults
@@ -242,7 +246,7 @@ become your go-to experts.
 Before writing individual GDDs, enumerate all the systems your game needs:
 
 ```
-/map-systems
+$studio-map-systems
 ```
 
 This creates `design/gdd/systems-index.md` -- a master tracking document that:
@@ -259,7 +263,7 @@ production.
 ### Phase 1 Gate
 
 ```
-/gate-check concept
+$studio-gate-check concept
 ```
 
 **Requirements to pass:**
@@ -285,7 +289,7 @@ and then all GDDs are cross-checked for consistency.
 ### Phase 2 Pipeline
 
 ```
-/map-systems next  -->  /design-system  -->  /design-review
+$studio-map-systems next  -->  $studio-design-system  -->  $studio-design-review
        |                     |                     |
        v                     v                     v
   Picks next system    Section-by-section     Validates 8
@@ -310,21 +314,21 @@ Design each system in dependency order using the guided workflow:
 ```
 
 This picks the highest-priority undesigned system and hands off to
-`/design-system`, which guides you through creating its GDD section by section.
+`$studio-design-system`, which guides you through creating its GDD section by section.
 
 You can also design a specific system directly:
 
 ```
-/design-system combat-system
+$studio-design-system combat-system
 ```
 
-**What /design-system does:**
+**What `$studio-design-system` does:**
 
 1. Reads your game concept, systems index, and any upstream/downstream GDDs
 2. Runs a Technical Feasibility Pre-Check (domain mapping + feasibility brief)
 3. Walks you through each of the 8 required GDD sections one at a time
-4. Each section follows: Context > Questions > Options > Decision > Draft > Approval > Write
-5. Each section is written to file immediately after approval (survives crashes)
+4. Each section follows a guided decision cycle grounded in repo context
+5. Durable artifacts are written incrementally so work survives crashes and compaction
 6. Flags conflicts with existing approved GDDs
 7. Routes to specialist agents per category (systems-designer for math,
    economy-designer for economy, narrative-director for story systems)
@@ -779,9 +783,9 @@ scope clarity. Verdict: READY / NEEDS WORK / BLOCKED.
 - `ui-programmer` for UI code
 - `tools-programmer` for dev tools
 
-All agents follow the collaborative protocol: they read the design doc, ask
-clarifying questions, present architectural options, get your approval, then
-implement.
+All agents follow the active `AGENTS.md` contract: they read the design doc,
+ask when a decision materially changes the output, proceed automatically on clear
+safe steps, and verify before claiming completion.
 
 **3. Story Completion:** When a story is done:
 
@@ -990,7 +994,7 @@ Coordinates 4 specialists in parallel:
 3. Audio polish (sound-designer)
 4. Feel/juice (gameplay-programmer + technical-artist)
 
-You set priorities; the team executes with your approval at each step.
+You set priorities; the team executes within the active `AGENTS.md` autonomy and verification rules.
 
 ### Step 6.7: Localization and Accessibility
 
@@ -1148,7 +1152,7 @@ These topics apply across all phases.
 Director gates are specialist agents that review your work at key workflow steps.
 By default they run at every checkpoint. You can control how much review you get.
 
-**Set your review intensity once during `/start`.** Saved to `production/review-mode.txt`.
+**Set your review intensity once during `$studio-start`.** Saved to `production/review-mode.txt`.
 
 | Mode | What runs | Best for |
 |------|-----------|----------|
@@ -1164,7 +1168,7 @@ By default they run at every checkpoint. You can control how much review you get
 ```
 
 The `--review` flag works on all gate-using skills. Change the global mode at any
-time by editing `production/review-mode.txt` directly or re-running `/start`.
+time by editing `production/review-mode.txt` directly or re-running `$studio-start`.
 
 Full gate definitions and check pattern: `docs/studio/director-gates.md`
 
@@ -1172,17 +1176,17 @@ Full gate definitions and check pattern: `docs/studio/director-gates.md`
 
 ### The Collaboration Protocol
 
-This system is **user-driven collaborative**, not autonomous.
+This system is collaborative, but the active runtime is not based on Claude-era
+approval choreography.
 
-**Pattern:** Question > Options > Decision > Draft > Approval
+**Pattern:** Explore > Explain > Decide (when needed) > Edit > Verify
 
-Every agent interaction follows this pattern:
-1. Agent asks clarifying questions
-2. Agent presents 2-4 options with trade-offs and reasoning
-3. You decide
-4. Agent drafts based on your decision
-5. You review and refine
-6. Agent asks "May I write this to [filepath]?" before writing
+Every agent interaction should follow this pattern:
+1. Agent inspects the repo and gathers evidence
+2. Agent explains trade-offs and asks only when the decision matters
+3. Safe, reversible edits proceed automatically under `AGENTS.md`
+4. User input is reserved for destructive, materially branching, or preference-dependent decisions
+5. Verification evidence is part of completion
 
 See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for the full protocol with
 examples.
@@ -1234,7 +1238,7 @@ The system has 12 hooks that run automatically:
 | Hook | Trigger | What It Does |
 |------|---------|-------------|
 | `session-start.sh` | Session start | Shows branch, recent commits, detects active.md for recovery |
-| `detect-gaps.sh` | Session start | Detects fresh projects (no engine, no concept) and suggests `/start` |
+| `detect-gaps.sh` | Session start | Detects fresh projects (no engine, no concept) and suggests `$studio-start` |
 | `pre-compact.sh` | Before compaction | Dumps session state into conversation for auto-recovery |
 | `post-compact.sh` | After compaction | Reminds the next Codex turn to restore session state from `active.md` |
 | `notify.sh` | Notification event | Shows Windows toast notification via PowerShell |
@@ -1252,10 +1256,9 @@ The system has 12 hooks that run automatically:
 checkpoint. Update it after each significant milestone. After any disruption
 (compaction, crash, `/clear`), read this file first.
 
-**Incremental writing:** When creating multi-section documents, write each
-section to file immediately after approval. This means completed sections
-survive crashes and context compactions. Previous discussion about written
-sections can be safely compacted.
+**Incremental writing:** When creating multi-section documents, write durable
+sections as they stabilize. This means completed sections survive crashes and
+context compactions. Previous discussion about written sections can be safely compacted.
 
 **Automatic recovery:** The `session-start.sh` hook detects and previews
 `active.md` automatically. The `pre-compact.sh` hook dumps state into the
@@ -1408,7 +1411,11 @@ conflicts go to `producer`.
 
 ---
 
-## Appendix B: Slash Command Quick-Reference
+## Appendix B: Workflow Quick-Reference
+
+Legacy `/...` names are kept in this appendix because the upstream studio
+material still uses them. In this fork, prefer the matching `$studio-*`
+workflow skill or `/prompts:studio-*` role prompt when available.
 
 ### All 66 Commands by Category
 

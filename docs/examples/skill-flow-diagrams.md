@@ -3,6 +3,10 @@
 Visual maps of how skills chain together across the 7 development phases.
 These show what runs before and after each skill, and what artifacts flow between them.
 
+The diagram labels below preserve upstream `/...` workflow names because they
+mirror the historical studio catalog. In this fork, prefer the matching
+`$studio-*` workflow skill when one exists.
+
 ---
 
 ## Full Pipeline Overview (Zero to Ship)

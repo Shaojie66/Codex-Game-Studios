@@ -1,6 +1,8 @@
 # Collaborative Session Examples
 
-This directory contains realistic, end-to-end session transcripts showing how the Game Studio Agent Architecture works in practice. Each example demonstrates the **collaborative workflow** where agents ask questions, present options, and wait for user approval rather than autonomously generating content.
+This directory contains realistic, end-to-end session transcripts showing how the Game Studio Agent Architecture works in practice.
+
+These examples preserve a mix of upstream legacy command names and older, more approval-heavy interaction styles. In this Codex fork, treat them as workflow illustrations rather than the exact current runtime contract. The active defaults come from `AGENTS.md`, `$studio-*` skills, and `/prompts:studio-*`.
 
 ---
 
@@ -32,7 +34,7 @@ design-system, story lifecycle, UX pipeline, and brownfield onboarding.
 **Complexity:** Medium
 
 **Scenario:**
-Dev runs `/design-system movement` after `/map-systems` produced the systems index. The skill loads context from the game concept and dependency GDDs, runs a technical feasibility pre-check, then guides through all 8 GDD sections one at a time — drafting, approving, and writing each section to disk before moving to the next.
+Dev runs the legacy `/design-system movement` flow after `/map-systems` produced the systems index. In the current fork, the equivalent active entrypoint is `$studio-design-system`. The transcript shows a more approval-heavy version of the guided GDD flow.
 
 **Key Moments:**
 - Technical feasibility pre-check flags Jolt physics default change (Godot 4.6)
@@ -244,9 +246,9 @@ Question → Options → Decision → Draft → Approval
 ```
 
 > **Note:** These examples show the collaborative pattern as conversational text.
-> In practice, agents now use `ask_user_dictation` when spoken user input is
-> needed. The pattern is **Explain → Capture**: agents explain their analysis in
-> conversation first, then ask one concise question for the user's decision.
+> In the current runtime, agents use `ask_user_dictation` only when spoken user
+> input is actually needed, and otherwise proceed automatically on safe,
+> reversible steps under `AGENTS.md`.
 
 ### ✅ **Collaborative Behaviors Shown:**
 
@@ -265,10 +267,10 @@ Question → Options → Decision → Draft → Approval
    - Architecture proposals shown before implementation
    - Strategic analysis presented before decisions
 
-4. **Agents Get Approval Before Writing Files**
-   - Explicit "May I write to [file]?" before using Write/Edit tools
-   - Multi-file changes list all affected files first
-   - User says "Yes" before any file is created
+4. **Agents Keep Decision Boundaries Clear**
+   - Safe, reversible edits can proceed automatically
+   - Materially branching or destructive changes still require user input
+   - Multi-file changes are explained clearly enough to review
 
 5. **Agents Iterate on Feedback**
    - User modifications incorporated immediately
@@ -287,7 +289,7 @@ Read these examples BEFORE your first session. They show realistic expectations 
 
 ### For Understanding Specific Workflows:
 - **New to the system?** → Read skill-flow-diagrams.md first
-- **Running /design-system for the first time?** → Read session-design-system-skill.md
+- **Running `$studio-design-system` for the first time?** → Read session-design-system-skill.md
 - **Picking up a story?** → Read session-story-lifecycle.md
 - **Finishing a phase?** → Read session-gate-check-phase-transition.md
 - **Starting UI work?** → Read session-ux-pipeline.md
