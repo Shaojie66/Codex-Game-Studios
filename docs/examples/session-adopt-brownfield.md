@@ -188,6 +188,8 @@
 
 ## What This Example Demonstrates
 
+This example keeps the original transcript wording, including explicit write confirmations. In the current Codex runtime, the same adoption logic still surfaces blocking gaps first, but safe gap-filling work can proceed without repeating every historical approval step verbatim.
+
 - **FORMAT audit, not existence audit**: `/adopt` doesn't just check whether files exist — it checks whether their internal structure matches what skills expect. A file named `gdd.md` with no template sections is flagged as a gap.
 - **Migration, not replacement**: existing content is never overwritten. The plan fills gaps only.
 - **BLOCKING gaps surface first**: the missing systems index is identified as BLOCKING because it prevents the most skills from functioning.

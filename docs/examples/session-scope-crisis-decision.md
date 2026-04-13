@@ -336,6 +336,9 @@
 - Provided demo script to help user present the decision positively
 
 **Key Collaborative Moments:**
+
+This strategic example still matches the current runtime closely, because the decision is materially branching and user-owned. The main thing to treat as historical is the slightly more formal transcript style, not the need for user control over the actual scope call.
+
 - Turn 2: Agent gathered full context before jumping to solutions
 - Turn 3: User provided decision criteria priority (funding > schedule > polish)
 - Turn 5: Agent presented 3 options, made recommendation, but explicitly "this is your call"

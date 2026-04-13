@@ -144,6 +144,8 @@
 
 ## What This Example Demonstrates
 
+This example remains representative of the gate logic itself. The only historical wrinkle is the explicit confirmation before stage advancement; current Codex sessions still ask at that boundary because it is materially branching, but the surrounding runtime is no longer approval-heavy by default.
+
 - **Gate check is automated, not manual**: agent reads artifacts and checks them — user doesn't fill out a form
 - **CONCERNS ≠ FAIL**: the cross-review concern is LOW severity and passes the gate. A FAIL would require resolution before advancing.
 - **Stage.txt is the authority**: the status line, `/help`, and all skills read from `production/stage.txt` — updating it here changes what every subsequent skill sees

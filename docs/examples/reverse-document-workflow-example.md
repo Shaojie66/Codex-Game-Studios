@@ -110,6 +110,8 @@ Next steps:
 
 ## Key Observations
 
+This reverse-documentation example still matches the current runtime well on substance: inspect implementation first, clarify intent, then write durable docs. The explicit "May I write" line in the transcript is historical style rather than the only acceptable Codex interaction pattern.
+
 1. **Agent asked clarifying questions** - didn't just describe code
 2. **Separated intent from implementation** - user corrected "accidental" imbalance
 3. **Design doc captures "why"** - not just "what the code does"

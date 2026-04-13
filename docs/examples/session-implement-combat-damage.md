@@ -280,6 +280,9 @@
 - Agent offered next-step options rather than assuming what user wants
 
 **Key Collaborative Moments:**
+
+This transcript reflects an older "show architecture, wait, then write" cadence. In the current Codex runtime, the same branching design decisions are still surfaced, but clear, low-risk implementation work can proceed without reenacting every historical approval checkpoint.
+
 - Turn 2: Agent identified 7 spec gaps and asked rather than guessing
 - Turn 4: Full architecture proposal shown before implementation
 - Turn 5: User requested type safety, agent adapted

@@ -248,12 +248,15 @@
 - Explicit permission requested before writing file
 
 **Key Collaborative Moments:**
+
+This transcript shows the older approval-heavy design loop. In the current Codex runtime, the same design reasoning and user decision points still matter, but safe file writes are governed by `AGENTS.md` rather than a mandatory "May I write" prompt on every step.
+
 - Turn 2: Agent asked 5 questions to understand vision
 - Turn 4: Agent presented 3 options, made recommendation but deferred to user
 - Turn 5: User modified recommended option, agent incorporated it
 - Turn 8: Agent caught edge case and asked rather than assuming
 - Turn 9: User's choice (procedural potions) changed design direction
-- Turn 10: Agent requested approval before writing file
+- Turn 10: Agent paused for an explicit write confirmation in this historical transcript
 
 **Files Created:**
 - `design/gdd/crafting-system.md` (complete 8-section GDD)

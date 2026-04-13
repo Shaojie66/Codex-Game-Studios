@@ -156,15 +156,15 @@ Dev has 3 months of existing code and rough design notes but nothing in the righ
 **Complexity:** Medium
 
 **Scenario:**
-Solo dev needs to design a crafting system that serves Pillar 2 ("Emergent Discovery Through Experimentation"). The agent guides them through question/answer, presents 3 design options with game theory analysis, incorporates user modifications, and iteratively drafts the GDD with approval at each step.
+Solo dev needs to design a crafting system that serves Pillar 2 ("Emergent Discovery Through Experimentation"). The agent guides them through question/answer, presents 3 design options with game theory analysis, incorporates user modifications, and iteratively drafts the GDD in a deliberately reviewable way.
 
 **Key Collaborative Moments:**
 - Agent asks 5 clarifying questions upfront
 - Presents 3 distinct options with pros/cons + MDA alignment
 - User modifies recommended option, agent incorporates immediately
 - Edge case flagged proactively ("what if non-recipe combo?")
-- Each GDD section shown for approval before moving to next
-- Explicit "May I write to [file]?" before creating file
+- Each GDD section kept small and reviewable
+- Historical transcript uses explicit write confirmation; current runtime uses `AGENTS.md` decision boundaries
 
 **Learn:**
 - How design agents ask about goals, constraints, references
@@ -325,9 +325,9 @@ If you're teaching someone to use this system, walk through one example turn-by-
 - Incorporate feedback immediately
 - Flag edge cases or ambiguities proactively
 
-### Turn 9-10: **Approval and Completion**
-- "May I write to [file]?"
-- User: "Yes"
+### Turn 9-10: **Decision and Completion**
+- Agent makes the next edit boundary explicit
+- User confirms only when the decision actually matters
 - Agent writes files
 - Agent offers next steps (tests, review, integration)
 
@@ -343,7 +343,7 @@ After reading these examples, try this exercise:
    - ✅ Asks clarifying questions upfront
    - ✅ Presents options with reasoning
    - ✅ Shows drafts before finalizing
-   - ✅ Requests approval before writing files
+   - ✅ Makes next edits and decision boundaries explicit
 
 If the agent skips any of these, remind it:
 > "Please follow the collaborative protocol from docs/COLLABORATIVE-DESIGN-PRINCIPLE.md"

@@ -237,6 +237,8 @@
 
 ## What This Example Demonstrates
 
+This example is still accurate about readiness and completion gates. The transcript preserves an older explicit write-confirmation style, but the current Codex runtime applies that level of friction only when the next step is materially branching or risky.
+
 - **Readiness gate catches real issues**: the roll direction ambiguity would have caused a late implementation decision without `/story-readiness`
 - **ADR status is a hard gate**: if `movement-adr-001.md` had been `Proposed` instead of `Accepted`, story would be `BLOCKED` and implementation wouldn't start
 - **Deferred criteria**: not every acceptance criterion can be verified at story close — `/story-done` tracks deferred items rather than blocking completion

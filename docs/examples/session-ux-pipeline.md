@@ -201,6 +201,8 @@ design/ux/hud.md
 
 ## What This Example Demonstrates
 
+This transcript keeps the older section-by-section approval style. In the current Codex runtime, the UX review gates and accessibility logic still apply, but routine spec writes can proceed more automatically under `AGENTS.md`.
+
 - **Context-driven design**: agent reads player-journey.md to ground HUD decisions in player emotional state, not just feature lists
 - **UX review is a hard gate**: `/team-ui` checks for a passing `/ux-review` before proceeding to visual design
 - **Accessibility caught early**: the missing keyboard alternative was flagged by review, not discovered by a QA tester in the final week

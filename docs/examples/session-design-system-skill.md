@@ -261,7 +261,9 @@
 
 ## What This Example Demonstrates
 
-- **Incremental file writing**: each section written to disk immediately after approval — a session crash loses at most one in-progress section
+This transcript preserves an older, section-by-section approval-heavy authoring rhythm. In the current Codex runtime, the same workflow still writes incrementally, but safe, reversible edits no longer require the exact same explicit approval cadence.
+
+- **Incremental file writing**: each section written to disk as it stabilizes — a session crash loses at most one in-progress section
 - **Template population**: the GDD template's 8 sections become concrete content through dialogue, not bulk generation
 - **Dependency signaling**: agent proactively surfaces downstream signal contracts (stamina, inventory) during the Dependencies section
 - **Technical feasibility pre-check**: agent notes Jolt physics change before design starts, not after implementation breaks
