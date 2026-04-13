@@ -64,7 +64,7 @@ Read [docs/codex-port.md](docs/codex-port.md) for the current Codex-native maint
 | Category | Count | Description |
 |----------|-------|-------------|
 | **Agents** | 49 | Specialized subagents across design, programming, art, audio, narrative, QA, and production |
-| **Skills** | 72 | Slash commands for every workflow phase (`/start`, `/design-system`, `/create-epics`, `/create-stories`, `/dev-story`, `/story-done`, etc.) |
+| **Skills** | 72 | Codex workflow skills covering onboarding, design, implementation, QA, release, and team orchestration (`$studio-start`, `$studio-design-system`, `$studio-dev-story`, `$studio-story-done`, etc.) |
 | **Hooks** | 12 | Automated validation on commits, pushes, asset changes, session lifecycle, agent audit trail, and gap detection |
 | **Rules** | 11 | Path-scoped coding standards enforced when editing gameplay, engine, AI, UI, network code, and more |
 | **Templates** | 39 | Document templates for GDDs, UX specs, ADRs, sprint plans, HUD design, accessibility, and more |
@@ -74,15 +74,15 @@ Read [docs/codex-port.md](docs/codex-port.md) for the current Codex-native maint
 Agents are organized into three tiers, matching how real studios operate:
 
 ```
-Tier 1 — Directors (Opus)
+Tier 1 — Directors
   creative-director    technical-director    producer
 
-Tier 2 — Department Leads (Sonnet)
+Tier 2 — Department Leads
   game-designer        lead-programmer       art-director
   audio-director       narrative-director    qa-lead
   release-manager      localization-lead
 
-Tier 3 — Specialists (Sonnet/Haiku)
+Tier 3 — Specialists
   gameplay-programmer  engine-programmer     ai-programmer
   network-programmer   tools-programmer      ui-programmer
   systems-designer     level-designer        economy-designer
@@ -146,7 +146,7 @@ The remaining `$studio-*` workflows are also active Codex-native skills. Prompts
 
 ## Upstream Workflow Catalog
 
-The upstream template still defines the original workflow inventory. Treat it as reference source material that this workspace now exposes through Codex-native prompts and skills:
+The upstream template still defines the original workflow inventory. Treat the names below as legacy reference aliases; in day-to-day use, prefer the Codex-native `studio-*` prompts and skills above:
 
 **Onboarding & Navigation**
 `/start` `/help` `/project-stage-detect` `/setup-engine` `/adopt`
@@ -281,17 +281,17 @@ Agents follow a structured delegation model:
 
 In this fork, those studio roles are invoked from Codex via `/prompts:studio-*`, generated from the upstream `.codex/prompt-sources/studio/*.md` files.
 
-### Collaborative, Not Autonomous
+### Execution Model
 
-This is **not** an auto-pilot system. Every agent follows a strict collaboration protocol:
+This workspace runs under the repository `AGENTS.md` contract, with Codex and OMX as the active runtime surface.
 
-1. **Ask** — agents ask questions before proposing solutions
-2. **Present options** — agents show 2-4 options with pros/cons
-3. **You decide** — the user always makes the call
-4. **Draft** — agents show work before finalizing
-5. **Approve** — nothing gets written without your sign-off
+1. **Explore first** — agents inspect the repo and gather evidence before claiming a plan
+2. **Proceed automatically on clear steps** — safe, reversible work does not wait on redundant confirmation
+3. **Ask only when the decision matters** — destructive, materially branching, or preference-dependent choices still require user input
+4. **Verify before claiming done** — tests, checks, and concrete evidence are part of completion
+5. **Keep history readable** — changes are expected to be reviewable, traceable, and reversible
 
-You stay in control. The agents provide structure and expertise, not autonomy.
+You still direct the work, but the default execution model is pragmatic autonomy rather than Claude-era approval choreography.
 
 ### Automated Safety
 
@@ -314,7 +314,7 @@ You stay in control. The agents provide structure and expertise, not autonomy.
 
 > **Note**: `validate-commit.sh`, `validate-assets.sh`, and `validate-skill-change.sh` fire on every Bash/Write tool call and exit immediately (exit 0) when the command or file path is not relevant. This is normal hook behavior — not a performance concern.
 
-**Permission rules** in `settings.json` auto-allow safe operations (git status, test runs) and block dangerous ones (force push, `rm -rf`, reading `.env` files).
+**Runtime guardrails** come from `AGENTS.md`, Codex configuration, and OMX stateful workflows rather than a Claude-specific permission UI.
 
 ### Path-Scoped Rules
 
@@ -351,7 +351,7 @@ This is a **template**, not a locked framework. Everything is meant to be custom
 - **Add rules** — create new path-scoped rules for your project's directory structure
 - **Tune hooks** — adjust validation strictness, add new checks
 - **Pick your engine** — use the Godot, Unity, or Unreal agent set (or none)
-- **Set review intensity** — `full` (all director gates), `lean` (phase gates only), or `solo` (none). Set during `/start` or edit `production/review-mode.txt`. Override per-run with `--review solo` on any skill.
+- **Set review intensity** — `full` (all director gates), `lean` (phase gates only), or `solo` (none). Set during `$studio-start` or edit `production/review-mode.txt`. Override per-run with `--review solo` on any relevant workflow.
 
 ## Platform Support
 
