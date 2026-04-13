@@ -25,7 +25,7 @@ be committed to version control. Add it to `.gitignore`.
 
 ## Permission Modes
 
-Game Studio CLI supports different permission modes. Recommended for game dev:
+Codex and OMX support different permission modes. Recommended for game dev:
 
 ### During Development (Default)
 Use **normal mode** — Codex asks before running most commands. This is safest

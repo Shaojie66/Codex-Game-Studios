@@ -1,5 +1,5 @@
 # Workflow Catalog
-# Used by /help to determine where a user is and what comes next.
+# Used by $studio-help (and legacy /help references) to determine where a user is and what comes next.
 #
 # Artifact checks:
 #   glob: file glob pattern — complete if ≥1 file matches (or min_count)
@@ -11,8 +11,11 @@
 # required: false → optional enhancement (shown as OPTIONAL)
 # repeatable: true → runs multiple times (one per system, story, etc.)
 #
-# Phase gates (/gate-check): verdicts are ADVISORY — they guide the decision
+# Phase gates ($studio-gate-check / legacy /gate-check): verdicts are ADVISORY — they guide the decision
 # but never hard-block advancement. The user always decides whether to proceed.
+#
+# `command:` fields preserve upstream slash-command names for compatibility with
+# older studio docs. In this fork, prefer the matching `$studio-*` workflow skill.
 
 phases:
 

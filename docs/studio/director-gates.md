@@ -29,16 +29,16 @@ Review intensity controls whether director gates run. It can be set globally
 (persists across sessions) or overridden per skill run.
 
 **Global config**: `production/review-mode.txt` — one word: `full`, `lean`, or `solo`.
-Set once during `/start`. Edit the file directly to change it at any time.
+Set once during `$studio-start`. Edit the file directly to change it at any time.
 
 **Per-run override**: any gate-using skill accepts `--review [full|lean|solo]` as an
 argument. This overrides the global config for that run only.
 
 Examples:
 ```
-/brainstorm space horror           → uses global mode
-/brainstorm space horror --review full   → forces full mode this run
-/architecture-decision --review solo     → skips all gates this run
+$studio-brainstorm space horror           → uses global mode
+$studio-brainstorm space horror --review full   → forces full mode this run
+$studio-architecture-decision --review solo     → skips all gates this run
 ```
 
 | Mode | What runs | Best for |
@@ -124,7 +124,7 @@ For phase gates, record in `docs/architecture/architecture.md` or
 
 ## Tier 1 — Creative Director Gates
 
-Agent: `creative-director` | Model tier: Opus | Domain: Vision, pillars, player experience
+Agent: `creative-director` | Runtime lane: leadership | Domain: Vision, pillars, player experience
 
 ---
 
@@ -266,7 +266,7 @@ any session that produces player feedback
 
 ## Tier 1 — Technical Director Gates
 
-Agent: `technical-director` | Model tier: Opus | Domain: Architecture, engine risk, performance
+Agent: `technical-director` | Runtime lane: leadership | Domain: Architecture, engine risk, performance
 
 ---
 
@@ -412,7 +412,7 @@ or before finalizing any engine-specific implementation approach
 
 ## Tier 1 — Producer Gates
 
-Agent: `producer` | Model tier: Opus | Domain: Scope, timeline, dependencies, production risk
+Agent: `producer` | Runtime lane: leadership | Domain: Scope, timeline, dependencies, production risk
 
 ---
 
@@ -538,7 +538,7 @@ is invoked
 
 ## Tier 1 — Art Director Gates
 
-Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible, visual production readiness
+Agent: `art-director` | Runtime lane: standard | Domain: Visual identity, art bible, visual production readiness
 
 ---
 
@@ -619,7 +619,7 @@ Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible,
 ## Tier 2 — Lead Gates
 
 These gates are invoked by orchestration skills and senior skills when a domain
-specialist's feasibility sign-off is needed. Tier 2 leads use Sonnet (default).
+specialist's feasibility sign-off is needed. Tier 2 leads use the standard runtime lane by default.
 
 ---
 

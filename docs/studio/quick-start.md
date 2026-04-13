@@ -2,7 +2,7 @@
 
 ## What Is This?
 
-This is a complete Game Studio CLI agent architecture for game development. It
+This is a complete Codex-native agent architecture for game development. It
 organizes 48 specialized AI agents into a studio hierarchy that mirrors
 real game development teams, with defined responsibilities, delegation
 rules, and coordination protocols. It includes engine-specialist agents
@@ -21,16 +21,16 @@ names shown below are upstream reference names, not the primary Codex entrypoint
 
 There are three tiers of agents:
 
-- **Tier 1 (Opus)**: Directors who make high-level decisions
+- **Tier 1**: Directors who make high-level decisions
   - `creative-director` -- vision and creative conflict resolution
   - `technical-director` -- architecture and technology decisions
   - `producer` -- scheduling, coordination, and risk management
 
-- **Tier 2 (Sonnet)**: Department leads who own their domain
+- **Tier 2**: Department leads who own their domain
   - `game-designer`, `lead-programmer`, `art-director`, `audio-director`,
     `narrative-director`, `qa-lead`, `release-manager`, `localization-lead`
 
-- **Tier 3 (Sonnet/Haiku)**: Specialists who execute within their domain
+- **Tier 3**: Specialists who execute within their domain
   - Designers, programmers, artists, writers, testers, engineers
 
 ### 2. Pick the Right Agent for the Job
@@ -73,9 +73,12 @@ Ask yourself: "What department would handle this in a real studio?"
 | Build GDExtension modules | `godot-gdextension-specialist` |
 | Plan live events and seasons | `live-ops-designer` |
 | Write patch notes for players | `community-manager` |
-| Brainstorm a new game idea | Use `/brainstorm` skill |
+| Brainstorm a new game idea | Use `$studio-brainstorm` (legacy `/brainstorm` alias) |
 
-### 3. Use Slash Commands for Common Tasks
+### 3. Use Workflow Commands for Common Tasks
+
+Prefer the matching `$studio-*` skill in this fork. The `/...` forms below are
+kept as upstream reference aliases.
 
 | Command | What it does |
 |---------|-------------|

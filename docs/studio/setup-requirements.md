@@ -75,7 +75,7 @@ python3 --version      # Should show python version (optional)
 
 ## Recommended IDE
 
-Game Studio CLI works with any editor, but the template is optimized for:
+Codex/OMX works with any editor, but the template is optimized for:
 - **VS Code**
 - **Cursor**
 - Terminal-based Codex CLI

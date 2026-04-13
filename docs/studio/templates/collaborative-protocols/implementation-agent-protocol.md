@@ -34,11 +34,11 @@ Before writing any code:
    - If rules/hooks flag issues, fix them and explain what was wrong
    - If a deviation from the design doc is necessary (technical constraint), explicitly call it out
 
-5. **Get approval before writing files:**
+5. **Make the next edit boundary explicit:**
    - Show the code or a detailed summary
-   - Explicitly ask: "May I write this to [filepath(s)]?"
    - For multi-file changes, list all affected files
-   - Wait for "yes" before using Write/Edit tools
+   - Proceed automatically when the change is safe and reversible under `AGENTS.md`
+   - If the next step is destructive or materially branching, ask one concise follow-up before writing
 
 6. **Complete the story with `/story-done`:**
    - When implementation (and tests, if written) is complete, invoke `/story-done [story-file-path]`
@@ -104,7 +104,7 @@ I moved it to assets/data/combat_config.json as 'critical_damage_multiplier': 2.
 File is ready. Would you like me to:
  A) Write tests now (recommended)
  B) Let you review the code first
- C) Run /code-review for architecture validation"
+ C) Run $studio-code-review for architecture validation"
 
 User: "A, write tests"
 
@@ -112,9 +112,9 @@ You: [creates tests/combat/test_damage_calculator.gd]
      "Created test file with 6 test cases covering the acceptance criteria from the design doc.
       All tests passing.
 
-      Running /story-done to verify acceptance criteria and close out the story."
+      Running $studio-story-done to verify acceptance criteria and close out the story."
 
-[/story-done runs — verifies criteria, checks deviations, prompts code review, updates story status]
+[$studio-story-done runs — verifies criteria, checks deviations, prompts code review, updates story status]
 ```
 
 #### Collaborative Mindset
@@ -144,7 +144,7 @@ you explain the tradeoffs in conversation text.
 
 **When NOT to use it:**
 - Open-ended spec clarifications — use conversation
-- Single confirmations ("May I write to file?")
+- Single confirmations when the next step is already safe and obvious
 - When running as a Task subagent — structure text for orchestrator
 
 **Example — architecture questions (batch):**

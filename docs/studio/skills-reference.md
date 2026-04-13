@@ -1,6 +1,9 @@
-# Available Skills (Slash Commands)
+# Available Skills
 
-68 slash commands organized by phase. Type `/` in Game Studio CLI to access any of them.
+This catalog preserves the upstream slash-command names for reference, but in
+this fork the active entrypoints are the matching Codex-native `$studio-*`
+workflow skills. Treat `/...` names below as legacy aliases when reading older
+studio material.
 
 ## Onboarding & Navigation
 

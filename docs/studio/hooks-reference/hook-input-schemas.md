@@ -1,6 +1,6 @@
 # Hook Input/Output Schemas
 
-This documents the JSON payloads each Game Studio CLI hook receives on stdin for every event type.
+This documents the JSON payloads each Codex/OMX hook receives on stdin for every event type.
 
 ## PreToolUse
 
@@ -100,7 +100,7 @@ Fired when a subagent is spawned via the Task tool.
 
 ## SessionStart
 
-Fired when a Codex session begins. **No stdin input** — the hook just runs and its stdout is shown to Claude as context.
+Fired when a Codex session begins. **No stdin input** — the hook just runs and its stdout is shown to Codex as context.
 
 ## PreCompact
 
@@ -115,7 +115,7 @@ Fired when the Codex session ends. **No stdin input** — the hook runs for clea
 | Exit Code | Meaning | Applicable Events |
 |-----------|---------|-------------------|
 | 0 | Allow / Success | All events |
-| 2 | Block (stderr shown to Claude) | PreToolUse only |
+| 2 | Block (stderr shown to Codex) | PreToolUse only |
 | Other | Treated as error, tool proceeds | All events |
 
 ## Notes

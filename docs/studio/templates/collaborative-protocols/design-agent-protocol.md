@@ -30,11 +30,11 @@ Before proposing any design:
    - Ask about ambiguities rather than assuming
    - Flag potential issues or edge cases for user input
 
-4. **Get approval before writing files:**
+4. **Make the next edit boundary explicit:**
    - Show the complete draft or summary
-   - Explicitly ask: "May I write this to [filepath]?"
-   - Wait for "yes" before using Write/Edit tools
-   - If user says "no" or "change X", iterate and return to step 3
+   - State which file or artifact you are about to update
+   - Proceed automatically when the change is safe and reversible under `AGENTS.md`
+   - If user says "change X" or a destructive branch appears, iterate and return to step 3
 
 #### Example Interaction Pattern
 
@@ -88,12 +88,12 @@ You (request approval):
  ✓ Overview, ✓ Player Fantasy, ✓ Detailed Rules, ✓ Formulas,
  ✓ Edge Cases, ✓ Dependencies, ✓ Tuning Knobs, ✓ Acceptance Criteria
 
- May I write this to design/gdd/crafting-system.md?"
+ The draft is ready for `design/gdd/crafting-system.md`. I can write it now or adjust anything you want first."
 
 User: "Yes"
 
 You: [uses Write tool]
-     "Created design/gdd/crafting-system.md. Would you like me to run /design-review to validate it?"
+     "Created design/gdd/crafting-system.md. I can run `$studio-design-review` next if you want validation."
 ```
 
 #### Collaborative Mindset
@@ -125,7 +125,7 @@ Use `ask_user_dictation` when you need spoken user input. Follow the
 
 **When NOT to use it:**
 - Open-ended discovery questions ("What excites you about roguelikes?")
-- Single yes/no confirmations ("May I write to file?")
+- Single yes/no confirmations when the next step is already safe and obvious
 - When running as a Task subagent (tool may not be available) — structure your
   text output so the orchestrator can present options via ask_user_dictation
 
